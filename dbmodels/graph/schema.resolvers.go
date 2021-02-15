@@ -6,8 +6,8 @@ package graph
 import (
 	"context"
 
-	"github.com/bitcou/bitcou-api/graph/generated"
-	"github.com/bitcou/bitcou-api/graph/model"
+	"github.com/bitcou/common/dbmodels/graph/generated"
+	"github.com/bitcou/common/dbmodels/graph/model"
 )
 
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
