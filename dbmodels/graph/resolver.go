@@ -3,11 +3,12 @@ package graph
 
 import (
 	"fmt"
-	"github.com/bitcou/bitcou-api/graph/model"
-	"github.com/davegardnerisme/phonegeocode"
-	"gorm.io/gorm"
 	"log"
 	"regexp"
+
+	"github.com/bitcou/common/dbmodels/graph/model"
+	"github.com/davegardnerisme/phonegeocode"
+	"gorm.io/gorm"
 )
 
 // This file will not be regenerated automatically.
