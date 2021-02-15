@@ -1,12 +1,13 @@
 package adminmodels
 
 import (
-	"github.com/bitcou/bitcou-api/graph/model"
+	"github.com/bitcou/common/dbmodels/graph/model"
 )
+
 /*
 These models are for representing the low level arquitechture of our database, GraphQL public API should make tose of
 ToGQL() methods to only expose some models fields to the end user.
- */
+*/
 
 type Product struct {
 	//  Product ID
@@ -68,8 +69,6 @@ type Product struct {
 	//  Array with categories where the product can be found
 	Categories []*model.Category `json:"categories" gorm:"many2many:product_categories;"`
 }
-
-
 
 func (p *Product) ToGQL() *model.Product {
 	// Custom param check
