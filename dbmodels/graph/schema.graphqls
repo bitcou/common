@@ -1,0 +1,352 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type Query {
+
+    """ *** Retrieve data for all clients """
+    clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]
+
+    """ *** Retrieve data for all categories """
+    categories(limit: Int = 0, offset: Int = 0): [Category!]
+
+    """ *** Retrieve data for all purchases """
+    purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]
+
+    """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
+    products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!
+
+    """ Retrieve data for all providers """
+    providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
+
+    """ Retrieve data for all countries """
+    countries(limit: Int = 0, offset: Int = 0): [Country!]
+
+    """ Retrieve the information the products that are available for that phone number """
+    productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]
+}
+
+type Category {
+
+    """ Category ID """
+    id: ID!
+
+    """ Category name """
+    name: String!
+
+    """ Products available in the category """
+    products: [Product!]
+}
+
+type ApiKey {
+
+    """ ApiKey Index """
+    id: ID!
+
+    """ ApiKey Value """
+    key: String!
+
+    """ ApiKey Value """
+    clientID: Int!
+
+    """ ApiKey Value """
+    client: Client!
+
+    """ ApiKey Value """
+    isDev: Boolean!
+
+}
+
+type Client {
+
+    """ Client ID """
+    id: ID!
+
+    """ Client name """
+    name: String!
+
+    """ Client address street """
+    addressStreet: String!
+
+    """ Client address postal code """
+    addressPC: Int!
+
+    """ Client address city """
+    addressCity: String!
+
+    """ Client address state """
+    addressState: String!
+
+    """ Client address country """
+    addressCountry: String!
+
+    """ Monthly fee """
+    monthlyFee: Float!
+
+    """ Terms and conditions of the client """
+    tc: String!
+
+    """ Client contact name """
+    contactName: String!
+
+    """ Client contact last name """
+    contactLastName: String!
+
+    """ Client contact title """
+    contactTitle: String!
+
+    """ Client contact email """
+    contactEmail: String!
+
+    """ Client purchases """
+    purchases: [Purchase!]
+}
+
+input ClientFilter {
+
+    """ Client ID """
+    id: ID
+
+    """ Client name """
+    name: String
+
+    """ Client address postal code """
+    addressPC: Int
+
+    """ Client address state """
+    addressState: String
+
+    """ Client address country """
+    addressCountry: String
+}
+
+type Country {
+
+    """ Country ID """
+    id: String!
+
+    """ Country name """
+    name: String!
+
+    """ Products available in the country """
+    products: [Product!]
+}
+
+input DateRange {
+
+    """ *** Start """
+    start: Int!
+
+    """ *** End """
+    end: Int!
+}
+
+type MetaProvider {
+
+    """ MetaProvider ID """
+    id: ID!
+
+    """ MetaProvider name """
+    name: String!
+}
+
+input PhoneNumber {
+
+    """ *** """
+    countryCode: String!
+
+    """ *** """
+    phoneNumber: String!
+}
+
+input PriceRange {
+
+    """ *** """
+    minPrice: Float
+
+    """ *** """
+    maxPrice: Float
+}
+
+type Product {
+
+    """ Product ID """
+    id: ID!
+
+    """ Indicates if the product is available """
+    available: Boolean!
+
+    """ Product currency """
+    currency: String!
+
+    """ Product description """
+    description: String!
+
+    """ Absolute product discount, expressed in net amount """
+    discountAbsolute: Float!
+
+    """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
+    discountPercentage: Float!
+
+    """ Fixed maximum price of the product """
+    fixedMaxPrice: Float!
+
+    """ Fixed minimum price of the product """
+    fixedMinPrice: Float!
+
+    """ Product name """
+    fullName: String!
+
+    """ Indicates if the product has a discount """
+    hasDiscount: Boolean!
+
+    """ Indicates if the product has a fixed price """
+    isFixedPrice: Boolean!
+
+    """ Indicates if the product is premium """
+    isPremium: Boolean!
+
+    """ Product country, expressed with ISO 3166 Alpha-2 code """
+    locale: String!
+
+    """ Online terms and conditions of the product represented in a string, in some cases with urls in between """
+    onlineTc: String!
+
+    """ Original product ID """
+    originalID: String!
+
+    """ MetaProvider ID """
+    metaProviderID: Int!
+
+    """ MetaProvider data """
+    metaProvider: MetaProvider!
+
+    """ Provider ID """
+    providerID: Int!
+
+    """ Provider data """
+    provider: Provider!
+
+    """ Instructions to redeem the product """
+    redeemInstructions: String!
+
+    """ Site to redeem the product """
+    redeemSite: String!
+
+    """ Whether the product requires user identity """
+    requiresUserIdentity: Boolean!
+
+    """ Terms and conditions of the product represented in a string """
+    tc: String!
+
+    """ URL Image of the product """
+    urlImage: String!
+
+    """ Array containing the countries where the product can be found """
+    countries: [Country!]!
+
+    """ *** """
+    variants: [Variant!]
+
+    """ Array with categories where the product can be found """
+    categories: [Category!]
+}
+
+input ProductFilter {
+
+    """ Product ID """
+    id: ID
+
+    """ Product country, expressed with ISO 3166 Alpha-2 code """
+    locale: String
+
+    """ Product provider ID """
+    providerID: Int
+
+    """ Product name """
+    fullName: String
+}
+
+type Provider {
+
+    """ Provider ID """
+    id: ID!
+
+    """ URL Image of the provider """
+    image: String!
+
+    """ MetaProvider ID """
+    metaProviderID: Int!
+
+    """ MetaProvider data """
+    metaProvider: MetaProvider!
+
+    """ Provider name """
+    name: String!
+
+    """ Original provider ID """
+    originalId: String!
+}
+
+input ProviderFilter {
+
+    """ Provider name """
+    name: String!
+}
+
+type Purchase {
+
+    """ Purchase ID """
+    id: ID!
+
+    """ Client ID of the purchase """
+    clientID: Int!
+
+    """ Client of the purchase """
+    client: Client!
+
+    """ Product ID of the purchase """
+    productID: Int!
+
+    """ Product of the purchase """
+    product: Product!
+
+    """ Total purchase price in euros """
+    totalEuro: Float!
+
+    """ Timestamp for the purchase in UTC *** """
+    timestamp: Int!
+}
+
+input PurchaseFilter {
+
+    """ *** Purchase ID """
+    id: ID
+
+    """ *** Timestamp for the purchase, in Unix Timestamp format """
+    dateRange: DateRange
+
+    """ *** Client ID of the purchase """
+    clientID: Int
+
+    """ *** Product ID of the purchase """
+    productID: Int
+
+    """ *** Price range in euros """
+    priceRange: PriceRange
+}
+
+type Variant {
+
+    """ Variant ID """
+    id: Int!
+
+    """ Variant product ID """
+    productID: Int!
+
+    """ Variant price """
+    price: Float!
+
+    """ Variant value """
+    value: Float!
+}
