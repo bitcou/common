@@ -46,6 +46,7 @@ type ComplexityRoot struct {
 		Client   func(childComplexity int) int
 		ClientID func(childComplexity int) int
 		ID       func(childComplexity int) int
+		IsAdmin  func(childComplexity int) int
 		IsDev    func(childComplexity int) int
 		Key      func(childComplexity int) int
 	}
@@ -196,6 +197,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.APIKey.ID(childComplexity), true
+
+	case "ApiKey.isAdmin":
+		if e.complexity.APIKey.IsAdmin == nil {
+			break
+		}
+
+		return e.complexity.APIKey.IsAdmin(childComplexity), true
 
 	case "ApiKey.isDev":
 		if e.complexity.APIKey.IsDev == nil {
@@ -807,7 +815,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema.graphqls", Input: `# GraphQL schema example
+	{Name: "dbmodels/graph/schema.graphqls", Input: `# GraphQL schema example
 #
 # https://gqlgen.com/getting-started/
 
@@ -855,14 +863,17 @@ type ApiKey {
     """ ApiKey Value """
     key: String!
 
-    """ ApiKey Value """
+    """ ApiKey Client Relation """
     clientID: Int!
 
-    """ ApiKey Value """
+    """ ApiKey Client Info """
     client: Client!
 
-    """ ApiKey Value """
+    """ ApiKey staging environment indication. """
     isDev: Boolean!
+
+    """ ApiKey admin privileges indication. """
+    isAdmin: Boolean!
 
 }
 
@@ -1211,7 +1222,7 @@ func (ec *executionContext) field_Query_clients_args(ctx context.Context, rawArg
 	var arg0 *model.ClientFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOClientFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClientFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOClientFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1268,7 +1279,7 @@ func (ec *executionContext) field_Query_productsByPhoneNumber_args(ctx context.C
 	var arg0 model.PhoneNumber
 	if tmp, ok := rawArgs["phoneNumber"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
-		arg0, err = ec.unmarshalNPhoneNumber2githubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPhoneNumber(ctx, tmp)
+		arg0, err = ec.unmarshalNPhoneNumber2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPhoneNumber(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1301,7 +1312,7 @@ func (ec *executionContext) field_Query_products_args(ctx context.Context, rawAr
 	var arg0 *model.ProductFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOProductFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOProductFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1334,7 +1345,7 @@ func (ec *executionContext) field_Query_providers_args(ctx context.Context, rawA
 	var arg0 *model.ProviderFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOProviderFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProviderFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOProviderFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProviderFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1367,7 +1378,7 @@ func (ec *executionContext) field_Query_purchases_args(ctx context.Context, rawA
 	var arg0 *model.PurchaseFilter
 	if tmp, ok := rawArgs["filter"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
-		arg0, err = ec.unmarshalOPurchaseFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchaseFilter(ctx, tmp)
+		arg0, err = ec.unmarshalOPurchaseFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseFilter(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1569,7 +1580,7 @@ func (ec *executionContext) _ApiKey_client(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.(*model.Client)
 	fc.Result = res
-	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
+	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ApiKey_isDev(ctx context.Context, field graphql.CollectedField, obj *model.APIKey) (ret graphql.Marshaler) {
@@ -1591,6 +1602,41 @@ func (ec *executionContext) _ApiKey_isDev(ctx context.Context, field graphql.Col
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.IsDev, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ApiKey_isAdmin(ctx context.Context, field graphql.CollectedField, obj *model.APIKey) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ApiKey",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsAdmin, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1706,7 +1752,7 @@ func (ec *executionContext) _Category_products(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.Product)
 	fc.Result = res
-	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Client_id(ctx context.Context, field graphql.CollectedField, obj *model.Client) (ret graphql.Marshaler) {
@@ -2193,7 +2239,7 @@ func (ec *executionContext) _Client_purchases(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*model.Purchase)
 	fc.Result = res
-	return ec.marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
+	return ec.marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Country_id(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
@@ -2295,7 +2341,7 @@ func (ec *executionContext) _Country_products(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*model.Product)
 	fc.Result = res
-	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _MetaProvider_id(ctx context.Context, field graphql.CollectedField, obj *model.MetaProvider) (ret graphql.Marshaler) {
@@ -2960,7 +3006,7 @@ func (ec *executionContext) _Product_metaProvider(ctx context.Context, field gra
 	}
 	res := resTmp.(*model.MetaProvider)
 	fc.Result = res
-	return ec.marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐMetaProvider(ctx, field.Selections, res)
+	return ec.marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐMetaProvider(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_providerID(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -3030,7 +3076,7 @@ func (ec *executionContext) _Product_provider(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Provider)
 	fc.Result = res
-	return ec.marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProvider(ctx, field.Selections, res)
+	return ec.marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProvider(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_redeemInstructions(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -3240,7 +3286,7 @@ func (ec *executionContext) _Product_countries(ctx context.Context, field graphq
 	}
 	res := resTmp.([]*model.Country)
 	fc.Result = res
-	return ec.marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
+	return ec.marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_variants(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -3272,7 +3318,7 @@ func (ec *executionContext) _Product_variants(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*model.Variant)
 	fc.Result = res
-	return ec.marshalOVariant2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐVariantᚄ(ctx, field.Selections, res)
+	return ec.marshalOVariant2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐVariantᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_categories(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -3304,7 +3350,7 @@ func (ec *executionContext) _Product_categories(ctx context.Context, field graph
 	}
 	res := resTmp.([]*model.Category)
 	fc.Result = res
-	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Provider_id(ctx context.Context, field graphql.CollectedField, obj *model.Provider) (ret graphql.Marshaler) {
@@ -3444,7 +3490,7 @@ func (ec *executionContext) _Provider_metaProvider(ctx context.Context, field gr
 	}
 	res := resTmp.(*model.MetaProvider)
 	fc.Result = res
-	return ec.marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐMetaProvider(ctx, field.Selections, res)
+	return ec.marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐMetaProvider(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Provider_name(ctx context.Context, field graphql.CollectedField, obj *model.Provider) (ret graphql.Marshaler) {
@@ -3619,7 +3665,7 @@ func (ec *executionContext) _Purchase_client(ctx context.Context, field graphql.
 	}
 	res := resTmp.(*model.Client)
 	fc.Result = res
-	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
+	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Purchase_productID(ctx context.Context, field graphql.CollectedField, obj *model.Purchase) (ret graphql.Marshaler) {
@@ -3689,7 +3735,7 @@ func (ec *executionContext) _Purchase_product(ctx context.Context, field graphql
 	}
 	res := resTmp.(*model.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProduct(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProduct(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Purchase_totalEuro(ctx context.Context, field graphql.CollectedField, obj *model.Purchase) (ret graphql.Marshaler) {
@@ -3798,7 +3844,7 @@ func (ec *executionContext) _Query_clients(ctx context.Context, field graphql.Co
 	}
 	res := resTmp.([]*model.Client)
 	fc.Result = res
-	return ec.marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClientᚄ(ctx, field.Selections, res)
+	return ec.marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3837,7 +3883,7 @@ func (ec *executionContext) _Query_categories(ctx context.Context, field graphql
 	}
 	res := resTmp.([]*model.Category)
 	fc.Result = res
-	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_purchases(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3876,7 +3922,7 @@ func (ec *executionContext) _Query_purchases(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Purchase)
 	fc.Result = res
-	return ec.marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
+	return ec.marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_products(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3918,7 +3964,7 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	}
 	res := resTmp.([]*model.Product)
 	fc.Result = res
-	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_providers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3957,7 +4003,7 @@ func (ec *executionContext) _Query_providers(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Provider)
 	fc.Result = res
-	return ec.marshalOProvider2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProviderᚄ(ctx, field.Selections, res)
+	return ec.marshalOProvider2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProviderᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_countries(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -3996,7 +4042,7 @@ func (ec *executionContext) _Query_countries(ctx context.Context, field graphql.
 	}
 	res := resTmp.([]*model.Country)
 	fc.Result = res
-	return ec.marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
+	return ec.marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_productsByPhoneNumber(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -4035,7 +4081,7 @@ func (ec *executionContext) _Query_productsByPhoneNumber(ctx context.Context, fi
 	}
 	res := resTmp.([]*model.Product)
 	fc.Result = res
-	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5554,7 +5600,7 @@ func (ec *executionContext) unmarshalInputPurchaseFilter(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dateRange"))
-			it.DateRange, err = ec.unmarshalODateRange2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐDateRange(ctx, v)
+			it.DateRange, err = ec.unmarshalODateRange2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐDateRange(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5578,7 +5624,7 @@ func (ec *executionContext) unmarshalInputPurchaseFilter(ctx context.Context, ob
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
-			it.PriceRange, err = ec.unmarshalOPriceRange2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPriceRange(ctx, v)
+			it.PriceRange, err = ec.unmarshalOPriceRange2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPriceRange(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5629,6 +5675,11 @@ func (ec *executionContext) _ApiKey(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "isDev":
 			out.Values[i] = ec._ApiKey_isDev(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isAdmin":
+			out.Values[i] = ec._ApiKey_isAdmin(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -6504,7 +6555,7 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
+func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6514,7 +6565,7 @@ func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋbitcou�
 	return ec._Category(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNClient2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClient(ctx context.Context, sel ast.SelectionSet, v *model.Client) graphql.Marshaler {
+func (ec *executionContext) marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx context.Context, sel ast.SelectionSet, v *model.Client) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6524,7 +6575,7 @@ func (ec *executionContext) marshalNClient2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑa
 	return ec._Client(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Country) graphql.Marshaler {
+func (ec *executionContext) marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Country) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6548,7 +6599,7 @@ func (ec *executionContext) marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountry(ctx, sel, v[i])
+			ret[i] = ec.marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountry(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6561,7 +6612,7 @@ func (ec *executionContext) marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 	return ret
 }
 
-func (ec *executionContext) marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountry(ctx context.Context, sel ast.SelectionSet, v *model.Country) graphql.Marshaler {
+func (ec *executionContext) marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountry(ctx context.Context, sel ast.SelectionSet, v *model.Country) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6616,7 +6667,7 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
-func (ec *executionContext) marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐMetaProvider(ctx context.Context, sel ast.SelectionSet, v *model.MetaProvider) graphql.Marshaler {
+func (ec *executionContext) marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐMetaProvider(ctx context.Context, sel ast.SelectionSet, v *model.MetaProvider) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6626,12 +6677,12 @@ func (ec *executionContext) marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋbitc
 	return ec._MetaProvider(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNPhoneNumber2githubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPhoneNumber(ctx context.Context, v interface{}) (model.PhoneNumber, error) {
+func (ec *executionContext) unmarshalNPhoneNumber2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPhoneNumber(ctx context.Context, v interface{}) (model.PhoneNumber, error) {
 	res, err := ec.unmarshalInputPhoneNumber(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
 	isLen1 := len(v) == 1
@@ -6655,7 +6706,7 @@ func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
+			ret[i] = ec.marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -6668,7 +6719,7 @@ func (ec *executionContext) marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 	return ret
 }
 
-func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v *model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProduct(ctx context.Context, sel ast.SelectionSet, v *model.Product) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6678,7 +6729,7 @@ func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑ
 	return ec._Product(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProvider(ctx context.Context, sel ast.SelectionSet, v *model.Provider) graphql.Marshaler {
+func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProvider(ctx context.Context, sel ast.SelectionSet, v *model.Provider) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6688,7 +6739,7 @@ func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋbitcou�
 	return ec._Provider(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchase(ctx context.Context, sel ast.SelectionSet, v *model.Purchase) graphql.Marshaler {
+func (ec *executionContext) marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchase(ctx context.Context, sel ast.SelectionSet, v *model.Purchase) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6713,7 +6764,7 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 	return res
 }
 
-func (ec *executionContext) marshalNVariant2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐVariant(ctx context.Context, sel ast.SelectionSet, v *model.Variant) graphql.Marshaler {
+func (ec *executionContext) marshalNVariant2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐVariant(ctx context.Context, sel ast.SelectionSet, v *model.Variant) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -6976,7 +7027,7 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Category) graphql.Marshaler {
+func (ec *executionContext) marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Category) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7003,7 +7054,7 @@ func (ec *executionContext) marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋbitco
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCategory(ctx, sel, v[i])
+			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategory(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7016,7 +7067,7 @@ func (ec *executionContext) marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋbitco
 	return ret
 }
 
-func (ec *executionContext) marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClientᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Client) graphql.Marshaler {
+func (ec *executionContext) marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Client) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7043,7 +7094,7 @@ func (ec *executionContext) marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou�
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClient(ctx, sel, v[i])
+			ret[i] = ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7056,7 +7107,7 @@ func (ec *executionContext) marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou�
 	return ret
 }
 
-func (ec *executionContext) unmarshalOClientFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐClientFilter(ctx context.Context, v interface{}) (*model.ClientFilter, error) {
+func (ec *executionContext) unmarshalOClientFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientFilter(ctx context.Context, v interface{}) (*model.ClientFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7064,7 +7115,7 @@ func (ec *executionContext) unmarshalOClientFilter2ᚖgithubᚗcomᚋbitcouᚋbi
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Country) graphql.Marshaler {
+func (ec *executionContext) marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Country) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7091,7 +7142,7 @@ func (ec *executionContext) marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐCountry(ctx, sel, v[i])
+			ret[i] = ec.marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountry(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7104,7 +7155,7 @@ func (ec *executionContext) marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 	return ret
 }
 
-func (ec *executionContext) unmarshalODateRange2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐDateRange(ctx context.Context, v interface{}) (*model.DateRange, error) {
+func (ec *executionContext) unmarshalODateRange2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐDateRange(ctx context.Context, v interface{}) (*model.DateRange, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7157,7 +7208,7 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 	return graphql.MarshalInt(*v)
 }
 
-func (ec *executionContext) unmarshalOPriceRange2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPriceRange(ctx context.Context, v interface{}) (*model.PriceRange, error) {
+func (ec *executionContext) unmarshalOPriceRange2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPriceRange(ctx context.Context, v interface{}) (*model.PriceRange, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7165,7 +7216,7 @@ func (ec *executionContext) unmarshalOPriceRange2ᚖgithubᚗcomᚋbitcouᚋbitc
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
+func (ec *executionContext) marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Product) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7192,7 +7243,7 @@ func (ec *executionContext) marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
+			ret[i] = ec.marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProduct(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7205,7 +7256,7 @@ func (ec *executionContext) marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 	return ret
 }
 
-func (ec *executionContext) unmarshalOProductFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProductFilter(ctx context.Context, v interface{}) (*model.ProductFilter, error) {
+func (ec *executionContext) unmarshalOProductFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductFilter(ctx context.Context, v interface{}) (*model.ProductFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7213,7 +7264,7 @@ func (ec *executionContext) unmarshalOProductFilter2ᚖgithubᚗcomᚋbitcouᚋb
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOProvider2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProviderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Provider) graphql.Marshaler {
+func (ec *executionContext) marshalOProvider2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProviderᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Provider) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7240,7 +7291,7 @@ func (ec *executionContext) marshalOProvider2ᚕᚖgithubᚗcomᚋbitcouᚋbitco
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProvider(ctx, sel, v[i])
+			ret[i] = ec.marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProvider(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7253,7 +7304,7 @@ func (ec *executionContext) marshalOProvider2ᚕᚖgithubᚗcomᚋbitcouᚋbitco
 	return ret
 }
 
-func (ec *executionContext) unmarshalOProviderFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐProviderFilter(ctx context.Context, v interface{}) (*model.ProviderFilter, error) {
+func (ec *executionContext) unmarshalOProviderFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProviderFilter(ctx context.Context, v interface{}) (*model.ProviderFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7261,7 +7312,7 @@ func (ec *executionContext) unmarshalOProviderFilter2ᚖgithubᚗcomᚋbitcouᚋ
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Purchase) graphql.Marshaler {
+func (ec *executionContext) marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Purchase) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7288,7 +7339,7 @@ func (ec *executionContext) marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋbitco
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchase(ctx, sel, v[i])
+			ret[i] = ec.marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchase(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7301,7 +7352,7 @@ func (ec *executionContext) marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋbitco
 	return ret
 }
 
-func (ec *executionContext) unmarshalOPurchaseFilter2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐPurchaseFilter(ctx context.Context, v interface{}) (*model.PurchaseFilter, error) {
+func (ec *executionContext) unmarshalOPurchaseFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseFilter(ctx context.Context, v interface{}) (*model.PurchaseFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -7333,7 +7384,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return graphql.MarshalString(*v)
 }
 
-func (ec *executionContext) marshalOVariant2ᚕᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐVariantᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Variant) graphql.Marshaler {
+func (ec *executionContext) marshalOVariant2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐVariantᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Variant) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7360,7 +7411,7 @@ func (ec *executionContext) marshalOVariant2ᚕᚖgithubᚗcomᚋbitcouᚋbitcou
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNVariant2ᚖgithubᚗcomᚋbitcouᚋbitcouᚑapiᚋgraphᚋmodelᚐVariant(ctx, sel, v[i])
+			ret[i] = ec.marshalNVariant2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐVariant(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

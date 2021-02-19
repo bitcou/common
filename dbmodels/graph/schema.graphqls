@@ -46,14 +46,17 @@ type ApiKey {
     """ ApiKey Value """
     key: String!
 
-    """ ApiKey Value """
+    """ ApiKey Client Relation """
     clientID: Int!
 
-    """ ApiKey Value """
+    """ ApiKey Client Info """
     client: Client!
 
-    """ ApiKey Value """
+    """ ApiKey staging environment indication. """
     isDev: Boolean!
+
+    """ ApiKey admin privileges indication. """
+    isAdmin: Boolean!
 
 }
 

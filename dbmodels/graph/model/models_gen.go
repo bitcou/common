@@ -7,12 +7,14 @@ type APIKey struct {
 	ID int `json:"id"`
 	//  ApiKey Value
 	Key string `json:"key"`
-	//  ApiKey Value
+	//  ApiKey Client Relation
 	ClientID int `json:"clientID"`
-	//  ApiKey Value
+	//  ApiKey Client Info
 	Client *Client `json:"client"`
-	//  ApiKey Value
+	//  ApiKey staging environment indication.
 	IsDev bool `json:"isDev"`
+	//  ApiKey admin privileges indication.
+	IsAdmin bool `json:"isAdmin"`
 }
 
 type Category struct {
@@ -214,7 +216,7 @@ type PurchaseFilter struct {
 	//  *** Purchase ID
 	ID *int `json:"id"`
 	//  *** Timestamp for the purchase, in Unix Timestamp format
-	DateRange *DateRange `json:"dateRange"`
+	DateRange *DateRange `json:"dateRange" `
 	//  *** Client ID of the purchase
 	ClientID *int `json:"clientID"`
 	//  *** Product ID of the purchase
