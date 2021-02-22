@@ -68,6 +68,8 @@ type Product struct {
 	Variants []*model.Variant `json:"variants"`
 	//  Array with categories where the product can be found
 	Categories []*model.Category `json:"categories" gorm:"many2many:product_categories;"`
+	//  Special field for provider specific product info. Ex store for Baluwo or ean for Ding.
+	ProductType string `json:"productType"`
 }
 
 func (p *Product) ToGQL() *model.Product {
@@ -86,27 +88,27 @@ func (p *Product) ToGQL() *model.Product {
 		Currency:             p.Currency,
 		Description:          description,
 		DiscountAbsolute:     p.DiscountAbsolute,
-		DiscountPercentage:   0,
-		FixedMaxPrice:        0,
-		FixedMinPrice:        0,
+		DiscountPercentage:   p.DiscountPercentage,
+		FixedMaxPrice:        p.FixedMaxPrice,
+		FixedMinPrice:        p.FixedMinPrice,
 		FullName:             name,
-		HasDiscount:          false,
-		IsFixedPrice:         false,
-		IsPremium:            false,
-		Locale:               "",
-		OnlineTc:             "",
-		OriginalID:           "",
-		MetaProviderID:       0,
-		MetaProvider:         nil,
-		ProviderID:           0,
-		Provider:             nil,
-		RedeemInstructions:   "",
-		RedeemSite:           "",
-		RequiresUserIdentity: false,
-		Tc:                   "",
-		URLImage:             "",
-		Countries:            nil,
-		Variants:             nil,
-		Categories:           nil,
+		HasDiscount:          p.HasDiscount,
+		IsFixedPrice:         p.IsFixedPrice,
+		IsPremium:            p.IsPremium,
+		Locale:               p.Locale,
+		OnlineTc:             p.OnlineTc,
+		OriginalID:           p.OriginalID,
+		MetaProviderID:       p.ProviderID,
+		MetaProvider:         p.MetaProvider,
+		ProviderID:           p.ProviderID,
+		Provider:             p.Provider,
+		RedeemInstructions:   p.RedeemInstructions,
+		RedeemSite:           p.RedeemSite,
+		RequiresUserIdentity: p.RequiresUserIdentity,
+		Tc:                   p.Tc,
+		URLImage:             p.URLImage,
+		Countries:            p.Countries,
+		Variants:             p.Variants,
+		Categories:           p.Categories,
 	}
 }
