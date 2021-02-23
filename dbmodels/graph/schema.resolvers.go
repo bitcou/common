@@ -5,7 +5,10 @@ package graph
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
+	"github.com/bitcou/common/auth"
 	"github.com/bitcou/common/dbmodels/graph/generated"
 	"github.com/bitcou/common/dbmodels/graph/model"
 )
@@ -23,6 +26,11 @@ func (r *queryResolver) Purchases(ctx context.Context, filter *model.PurchaseFil
 }
 
 func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilter, limit *int, offset *int) ([]*model.Product, error) {
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		return nil, errors.New("no client info")
+	}
+	fmt.Println("clientInfo", clientInfo)
 	return r.ProductsResolver(filter, limit, offset)
 }
 

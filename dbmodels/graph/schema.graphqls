@@ -103,6 +103,9 @@ type Client {
 
     """ Client purchases """
     purchases: [Purchase!]
+
+    """ Client premium status """
+    isPremium: Boolean!
 }
 
 input ClientFilter {

@@ -55,6 +55,8 @@ type Client struct {
 	ContactEmail string `json:"contactEmail"`
 	//  Client purchases
 	Purchases []*Purchase `json:"purchases"`
+	//  Client premium status
+	IsPremium bool `json:"isPremium"`
 }
 
 type ClientFilter struct {
