@@ -55,6 +55,8 @@ type Client struct {
 	ContactEmail string `json:"contactEmail"`
 	//  Client purchases
 	Purchases []*Purchase `json:"purchases"`
+	//  Client premium status
+	IsPremium bool `json:"isPremium"`
 }
 
 type ClientFilter struct {
@@ -173,6 +175,8 @@ type ProductFilter struct {
 	ProviderID *int `json:"providerID"`
 	//  Product name
 	FullName *string `json:"fullName"`
+	//  Product premium
+	IsPremium *bool `json:"isPremium"`
 }
 
 type Provider struct {

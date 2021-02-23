@@ -103,6 +103,9 @@ type Client {
 
     """ Client purchases """
     purchases: [Purchase!]
+
+    """ Client premium status """
+    isPremium: Boolean!
 }
 
 input ClientFilter {
@@ -268,6 +271,9 @@ input ProductFilter {
 
     """ Product name """
     fullName: String
+
+    """ Product premium """
+    isPremium: Boolean
 }
 
 type Provider {

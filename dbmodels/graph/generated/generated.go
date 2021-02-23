@@ -68,6 +68,7 @@ type ComplexityRoot struct {
 		ContactName     func(childComplexity int) int
 		ContactTitle    func(childComplexity int) int
 		ID              func(childComplexity int) int
+		IsPremium       func(childComplexity int) int
 		MonthlyFee      func(childComplexity int) int
 		Name            func(childComplexity int) int
 		Purchases       func(childComplexity int) int
@@ -309,6 +310,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Client.ID(childComplexity), true
+
+	case "Client.isPremium":
+		if e.complexity.Client.IsPremium == nil {
+			break
+		}
+
+		return e.complexity.Client.IsPremium(childComplexity), true
 
 	case "Client.monthlyFee":
 		if e.complexity.Client.MonthlyFee == nil {
@@ -920,6 +928,9 @@ type Client {
 
     """ Client purchases """
     purchases: [Purchase!]
+
+    """ Client premium status """
+    isPremium: Boolean!
 }
 
 input ClientFilter {
@@ -1085,6 +1096,9 @@ input ProductFilter {
 
     """ Product name """
     fullName: String
+
+    """ Product premium """
+    isPremium: Boolean
 }
 
 type Provider {
@@ -2240,6 +2254,41 @@ func (ec *executionContext) _Client_purchases(ctx context.Context, field graphql
 	res := resTmp.([]*model.Purchase)
 	fc.Result = res
 	return ec.marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Client_isPremium(ctx context.Context, field graphql.CollectedField, obj *model.Client) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Client",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsPremium, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Country_id(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
@@ -5556,6 +5605,14 @@ func (ec *executionContext) unmarshalInputProductFilter(ctx context.Context, obj
 			if err != nil {
 				return it, err
 			}
+		case "isPremium":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPremium"))
+			it.IsPremium, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5806,6 +5863,11 @@ func (ec *executionContext) _Client(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "purchases":
 			out.Values[i] = ec._Client_purchases(ctx, field, obj)
+		case "isPremium":
+			out.Values[i] = ec._Client_isPremium(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
