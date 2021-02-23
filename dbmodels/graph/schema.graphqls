@@ -271,6 +271,9 @@ input ProductFilter {
 
     """ Product name """
     fullName: String
+
+    """ Product premium """
+    isPremium: Boolean
 }
 
 type Provider {

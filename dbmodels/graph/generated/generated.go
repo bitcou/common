@@ -1096,6 +1096,9 @@ input ProductFilter {
 
     """ Product name """
     fullName: String
+
+    """ Product premium """
+    isPremium: Boolean
 }
 
 type Provider {
@@ -5599,6 +5602,14 @@ func (ec *executionContext) unmarshalInputProductFilter(ctx context.Context, obj
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("fullName"))
 			it.FullName, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isPremium":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPremium"))
+			it.IsPremium, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}

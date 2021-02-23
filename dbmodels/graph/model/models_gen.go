@@ -175,6 +175,8 @@ type ProductFilter struct {
 	ProviderID *int `json:"providerID"`
 	//  Product name
 	FullName *string `json:"fullName"`
+	//  Product premium
+	IsPremium *bool `json:"isPremium"`
 }
 
 type Provider struct {
