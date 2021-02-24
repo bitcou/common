@@ -74,7 +74,7 @@ type ClientFilter struct {
 
 type Country struct {
 	//  Country ID
-	ID string `json:"id"`
+	ID string `json:"id" gorm:"primaryKey"`
 	//  Country name
 	Name string `json:"name"`
 	//  Products available in the country
