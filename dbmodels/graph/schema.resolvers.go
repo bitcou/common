@@ -31,9 +31,14 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 		return nil, errors.New("no client info")
 	}
 	fmt.Println("clientInfo", clientInfo)
-	filter = &model.ProductFilter{
-		IsPremium: &clientInfo.IsPremium,
+	if filter == nil {
+		filter = &model.ProductFilter{
+			IsPremium: &clientInfo.IsPremium,
+		}
+	} else {
+		filter.IsPremium = &clientInfo.IsPremium
 	}
+
 	return r.ProductsResolver(filter, limit, offset)
 }
 
