@@ -19,6 +19,15 @@ type contextKey struct {
 	name string
 }
 
+// APIKeyInfo struct containing all elements required to validate the API requests and set permissions/write access.
+type APIKeyInfo struct {
+	APIKey    string
+	ClientID  int64
+	IsAdmin   bool
+	IsPremium bool
+	IsDev     bool
+}
+
 // Middleware decodes the share session cookie and packs the session into context
 func Middleware(db *gorm.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -40,8 +49,16 @@ func Middleware(db *gorm.DB) func(http.Handler) http.Handler {
 				return
 			}
 
+			key := APIKeyInfo{
+				APIKey:    keyInfo.Key,
+				ClientID:  int64(keyInfo.Client.ID),
+				IsAdmin:   keyInfo.IsAdmin,
+				IsPremium: keyInfo.Client.IsPremium,
+				IsDev:     keyInfo.IsDev,
+			}
+
 			// put it in context
-			ctx := context.WithValue(r.Context(), userCtxKey, keyInfo)
+			ctx := context.WithValue(r.Context(), userCtxKey, key)
 
 			// and call the next with our new context
 			r = r.WithContext(ctx)
@@ -51,8 +68,8 @@ func Middleware(db *gorm.DB) func(http.Handler) http.Handler {
 }
 
 // ForContext finds the user from the context. REQUIRES Middleware to have run.
-func ForContext(ctx context.Context) *model.APIKey {
-	raw, _ := ctx.Value(userCtxKey).(*model.APIKey)
+func ForContext(ctx context.Context) *APIKeyInfo {
+	raw, _ := ctx.Value(userCtxKey).(*APIKeyInfo)
 	return raw
 }
 
