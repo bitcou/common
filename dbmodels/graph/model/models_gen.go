@@ -220,7 +220,7 @@ type PurchaseFilter struct {
 	//  *** Purchase ID
 	ID *int `json:"id"`
 	//  *** Timestamp for the purchase, in Unix Timestamp format
-	DateRange *DateRange `json:"dateRange" `
+	DateRange *DateRange `json:"dateRange"`
 	//  *** Client ID of the purchase
 	ClientID *int `json:"clientID"`
 	//  *** Product ID of the purchase
