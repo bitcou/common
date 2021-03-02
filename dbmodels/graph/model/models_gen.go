@@ -151,7 +151,10 @@ type Product struct {
 	//  Instructions to redeem the product
 	RedeemInstructions string `json:"redeemInstructions"`
 	//  Site to redeem the product
-	RedeemSite string `json:"redeemSite"`
+	RedeemSite   string `json:"redeemSite"`
+	RequireMail  bool   `json:"requireMail"`
+	RequirePhone bool   `json:"requirePhone"`
+	RequireOther bool   `json:"requireOther"`
 	//  Whether the product requires user identity
 	RequiresUserIdentity bool `json:"requiresUserIdentity"`
 	//  Terms and conditions of the product represented in a string

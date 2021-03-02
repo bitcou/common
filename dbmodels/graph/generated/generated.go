@@ -110,6 +110,9 @@ type ComplexityRoot struct {
 		ProviderID           func(childComplexity int) int
 		RedeemInstructions   func(childComplexity int) int
 		RedeemSite           func(childComplexity int) int
+		RequireMail          func(childComplexity int) int
+		RequireOther         func(childComplexity int) int
+		RequirePhone         func(childComplexity int) int
 		RequiresUserIdentity func(childComplexity int) int
 		Tc                   func(childComplexity int) int
 		URLImage             func(childComplexity int) int
@@ -541,6 +544,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Product.RedeemSite(childComplexity), true
+
+	case "Product.requireMail":
+		if e.complexity.Product.RequireMail == nil {
+			break
+		}
+
+		return e.complexity.Product.RequireMail(childComplexity), true
+
+	case "Product.requireOther":
+		if e.complexity.Product.RequireOther == nil {
+			break
+		}
+
+		return e.complexity.Product.RequireOther(childComplexity), true
+
+	case "Product.requirePhone":
+		if e.complexity.Product.RequirePhone == nil {
+			break
+		}
+
+		return e.complexity.Product.RequirePhone(childComplexity), true
 
 	case "Product.requiresUserIdentity":
 		if e.complexity.Product.RequiresUserIdentity == nil {
@@ -1063,6 +1087,12 @@ type Product {
 
     """ Site to redeem the product """
     redeemSite: String!
+
+    requireMail: Boolean!
+
+    requirePhone: Boolean!
+
+    requireOther: Boolean!
 
     """ Whether the product requires user identity """
     requiresUserIdentity: Boolean!
@@ -3196,6 +3226,111 @@ func (ec *executionContext) _Product_redeemSite(ctx context.Context, field graph
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_requireMail(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequireMail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_requirePhone(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequirePhone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_requireOther(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequireOther, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_requiresUserIdentity(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -6058,6 +6193,21 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "redeemSite":
 			out.Values[i] = ec._Product_redeemSite(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requireMail":
+			out.Values[i] = ec._Product_requireMail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requirePhone":
+			out.Values[i] = ec._Product_requirePhone(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requireOther":
+			out.Values[i] = ec._Product_requireOther(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

@@ -239,6 +239,12 @@ type Product {
     """ Site to redeem the product """
     redeemSite: String!
 
+    requireMail: Boolean!
+
+    requirePhone: Boolean!
+
+    requireOther: Boolean!
+
     """ Whether the product requires user identity """
     requiresUserIdentity: Boolean!
 

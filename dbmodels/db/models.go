@@ -56,6 +56,13 @@ type Product struct {
 	RedeemInstructions string `json:"redeemInstructions"`
 	//  Site to redeem the product
 	RedeemSite string `json:"redeemSite"`
+
+	RequireMail bool `json:"requireMail"`
+
+	RequirePhone bool `json:"requirePhone"`
+
+	RequireOther bool `json:"requireOther"`
+
 	//  Whether the product requires user identity
 	RequiresUserIdentity bool `json:"requiresUserIdentity"`
 	//  Terms and conditions of the product represented in a string
@@ -104,6 +111,9 @@ func (p *Product) ToGQL() *model.Product {
 		Provider:             p.Provider,
 		RedeemInstructions:   p.RedeemInstructions,
 		RedeemSite:           p.RedeemSite,
+		RequireMail:          p.RequireMail,
+		RequirePhone:         p.RequirePhone,
+		RequireOther:         p.RequireOther,
 		RequiresUserIdentity: p.RequiresUserIdentity,
 		Tc:                   p.Tc,
 		URLImage:             p.URLImage,
