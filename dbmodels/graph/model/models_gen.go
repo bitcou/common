@@ -207,6 +207,8 @@ type Purchase struct {
 	ID int `json:"id"`
 	//  Client ID of the purchase
 	ClientID int `json:"clientID"`
+	//  Unique transaction ID from the client.
+	TransactionID string `json:"TransactionID"`
 	//  Client of the purchase
 	Client *Client `json:"client"`
 	//  Product ID of the purchase
@@ -214,9 +216,23 @@ type Purchase struct {
 	//  Product of the purchase
 	Product *Product `json:"product"`
 	//  Total purchase price in euros
-	TotalEuro float64 `json:"totalEuro"`
-	//  Timestamp for the purchase in UTC ***
-	Timestamp int `json:"timestamp"`
+	TotalValue float64 `json:"totalValue"`
+	//  End user name
+	EndUserName string `json:"EndUserName"`
+	//  End user email
+	EndUserEmail string `json:"EndUserEmail"`
+	//  End user country
+	EndUserCountry string `json:"EndUserCountry"`
+	//  End user country phone code
+	EndUserPhoneCountryCode string `json:"EndUserPhoneCountryCode"`
+	//  End user phone number
+	EndUserPhoneNumber string `json:"EndUserPhoneNumber"`
+	//  Extra field for service payment data.
+	EndUserSecondNumber string `json:"EndUserSecondNumber"`
+	//  Timestamp for the purchase request from out client in UTC
+	TimestampRequest int `json:"timestampRequest"`
+	//  Timestamp for the purchase delivery in UTC
+	TimestampFulfilled int `json:"timestampFulfilled"`
 }
 
 type PurchaseFilter struct {

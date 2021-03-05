@@ -317,6 +317,9 @@ type Purchase {
     """ Client ID of the purchase """
     clientID: Int!
 
+     """ Unique transaction ID from the client. """
+    TransactionID: String!
+
     """ Client of the purchase """
     client: Client!
 
@@ -327,10 +330,31 @@ type Purchase {
     product: Product!
 
     """ Total purchase price in euros """
-    totalEuro: Float!
+    totalValue: Float!
 
-    """ Timestamp for the purchase in UTC *** """
-    timestamp: Int!
+    """ End user name """
+    EndUserName: String!
+
+    """ End user email """
+    EndUserEmail: String!
+
+    """ End user country """
+    EndUserCountry: String!
+
+    """ End user country phone code """
+    EndUserPhoneCountryCode: String!
+
+    """ End user phone number """
+    EndUserPhoneNumber: String!
+
+    """ Extra field for service payment data. """
+    EndUserSecondNumber: String!
+
+    """ Timestamp for the purchase request from out client in UTC """
+    timestampRequest: Int!
+
+    """ Timestamp for the purchase delivery in UTC """
+    timestampFulfilled: Int!
 }
 
 input PurchaseFilter {
