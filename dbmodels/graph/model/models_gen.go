@@ -233,6 +233,12 @@ type Purchase struct {
 	TimestampRequest int `json:"timestampRequest"`
 	//  Timestamp for the purchase delivery in UTC
 	TimestampFulfilled int `json:"timestampFulfilled"`
+	//  Reedem Code for the purchase.
+	RedeemCode string `json:"redeemCode"`
+	//  Provider information on product redeem.
+	Receipt string `json:"receipt"`
+	//  Stores any error from Provider API
+	ErrorMessage string `json:"errorMessage"`
 }
 
 type PurchaseFilter struct {

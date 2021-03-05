@@ -355,6 +355,15 @@ type Purchase {
 
     """ Timestamp for the purchase delivery in UTC """
     timestampFulfilled: Int!
+
+    """ Reedem Code for the purchase. """
+    redeemCode: String!
+
+    """ Provider information on product redeem. """
+    receipt: String!
+
+    """ Stores any error from Provider API """
+    errorMessage: String!
 }
 
 input PurchaseFilter {

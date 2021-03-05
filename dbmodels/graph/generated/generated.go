@@ -137,9 +137,12 @@ type ComplexityRoot struct {
 		EndUserPhoneCountryCode func(childComplexity int) int
 		EndUserPhoneNumber      func(childComplexity int) int
 		EndUserSecondNumber     func(childComplexity int) int
+		ErrorMessage            func(childComplexity int) int
 		ID                      func(childComplexity int) int
 		Product                 func(childComplexity int) int
 		ProductID               func(childComplexity int) int
+		Receipt                 func(childComplexity int) int
+		RedeemCode              func(childComplexity int) int
 		TimestampFulfilled      func(childComplexity int) int
 		TimestampRequest        func(childComplexity int) int
 		TotalValue              func(childComplexity int) int
@@ -700,6 +703,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Purchase.EndUserSecondNumber(childComplexity), true
 
+	case "Purchase.errorMessage":
+		if e.complexity.Purchase.ErrorMessage == nil {
+			break
+		}
+
+		return e.complexity.Purchase.ErrorMessage(childComplexity), true
+
 	case "Purchase.id":
 		if e.complexity.Purchase.ID == nil {
 			break
@@ -720,6 +730,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Purchase.ProductID(childComplexity), true
+
+	case "Purchase.receipt":
+		if e.complexity.Purchase.Receipt == nil {
+			break
+		}
+
+		return e.complexity.Purchase.Receipt(childComplexity), true
+
+	case "Purchase.redeemCode":
+		if e.complexity.Purchase.RedeemCode == nil {
+			break
+		}
+
+		return e.complexity.Purchase.RedeemCode(childComplexity), true
 
 	case "Purchase.timestampFulfilled":
 		if e.complexity.Purchase.TimestampFulfilled == nil {
@@ -1268,6 +1292,15 @@ type Purchase {
 
     """ Timestamp for the purchase delivery in UTC """
     timestampFulfilled: Int!
+
+    """ Reedem Code for the purchase. """
+    redeemCode: String!
+
+    """ Provider information on product redeem. """
+    receipt: String!
+
+    """ Stores any error from Provider API """
+    errorMessage: String!
 }
 
 input PurchaseFilter {
@@ -4360,6 +4393,111 @@ func (ec *executionContext) _Purchase_timestampFulfilled(ctx context.Context, fi
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Purchase_redeemCode(ctx context.Context, field graphql.CollectedField, obj *model.Purchase) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Purchase",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RedeemCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Purchase_receipt(ctx context.Context, field graphql.CollectedField, obj *model.Purchase) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Purchase",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Receipt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Purchase_errorMessage(ctx context.Context, field graphql.CollectedField, obj *model.Purchase) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Purchase",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ErrorMessage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_clients(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6749,6 +6887,21 @@ func (ec *executionContext) _Purchase(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "timestampFulfilled":
 			out.Values[i] = ec._Purchase_timestampFulfilled(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "redeemCode":
+			out.Values[i] = ec._Purchase_redeemCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "receipt":
+			out.Values[i] = ec._Purchase_receipt(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "errorMessage":
+			out.Values[i] = ec._Purchase_errorMessage(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
