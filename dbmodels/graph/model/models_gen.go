@@ -331,6 +331,8 @@ type Variant struct {
 	ID int `json:"id"`
 	//  Variant product ID
 	ProductID int `json:"productID"`
+	//  Variant productAdmin ID
+	ProductAdminID int `json:"productAdminID"`
 	//  Variant price
 	Price float64 `json:"price"`
 	//  Variant value

@@ -501,6 +501,9 @@ type Variant {
     """ Variant product ID """
     productID: Int!
 
+    """ Variant productAdmin ID """
+    productAdminID: Int!
+
     """ Variant price """
     price: Float!
 

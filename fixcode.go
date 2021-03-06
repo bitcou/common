@@ -20,6 +20,10 @@ func main() {
 			"Countries []*Country `json:\"countries\"`":    "Countries []*Country `json:\"countries\" gorm:\"many2many:product_countries;\"`",
 			"Categories []*Category `json:\"categories\"`": "Categories []*Category `json:\"categories\" gorm:\"many2many:product_categories;\"`",
 		},
+		"ProductAdmin": {
+			"Countries []*Country `json:\"countries\"`":    "Countries []*Country `json:\"countries\" gorm:\"many2many:product_countries;\"`",
+			"Categories []*Category `json:\"categories\"`": "Categories []*Category `json:\"categories\" gorm:\"many2many:product_categories;\"`",
+		},
 	}
 
 	data, err := ioutil.ReadFile("dbmodels/graph/model/models_gen.go")
