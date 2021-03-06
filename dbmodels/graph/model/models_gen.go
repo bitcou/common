@@ -234,11 +234,11 @@ type ProductAdmin struct {
 	//  URL Image of the product
 	URLImage string `json:"urlImage"`
 	//  Array containing the countries where the product can be found
-	Countries []*Country `json:"countries"`
+	Countries []*Country `json:"countries" gorm:"many2many:product_countries;"`
 	//  ***
 	Variants []*Variant `json:"variants"`
 	//  Array with categories where the product can be found
-	Categories []*Category `json:"categories"`
+	Categories []*Category `json:"categories" gorm:"many2many:product_categories;"`
 }
 
 type ProductFilter struct {
