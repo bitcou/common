@@ -146,6 +146,41 @@ func (r *queryResolver) ProductsResolver(filter *model.ProductFilter, limit *int
 	return products, nil
 }
 
+func (r *queryResolver) ProductsAdminResolver(filter *model.ProductFilter, limit *int, offset *int) ([]*model.ProductAdmin, error) {
+	var products []*model.ProductAdmin
+	query := r.Resolver.DB
+
+	if filter != nil {
+		if filter.ID != nil {
+			query = query.Where("id = ?", *filter.ID)
+		}
+		if filter.Locale != nil && *filter.Locale != "" {
+			query = query.Where("locale = ?", *filter.Locale)
+		}
+		if filter.ProviderID != nil {
+			query = query.Where("provider_id = ?", *filter.ProviderID)
+		}
+		if filter.FullName != nil && *filter.FullName != "" {
+			query = query.Where("full_name LIKE ?", fmt.Sprintf("%%%s%%", *filter.FullName))
+		}
+		if filter.IsPremium != nil && !*filter.IsPremium {
+			query = query.Where("is_premium = FALSE")
+		}
+	}
+	if *limit > 0 {
+		query = query.Limit(*limit)
+	}
+	if *offset > 0 {
+		query = query.Offset(*offset)
+	}
+
+	err := query.Order("id").Preload("MetaProvider").Find(&products).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return products, nil
+}
+
 func (r *queryResolver) ProductsByPhoneNumberResolver(phoneNumber model.PhoneNumber, limit *int, offset *int) ([]*model.Product, error) {
 	var products []*model.Product
 	query := r.Resolver.DB

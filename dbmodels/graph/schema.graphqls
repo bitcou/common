@@ -16,6 +16,9 @@ type Query {
     """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
     products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!
 
+    """ Retrieve the information for a set of products with admin info, optionally filtering by ID, country or provider's ID """
+    products_admin(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [ProductAdmin!]!
+
     """ Retrieve data for all providers """
     providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
 
@@ -239,10 +242,116 @@ type Product {
     """ Site to redeem the product """
     redeemSite: String!
 
+    """ If the product requires seller to send end user mail info """
     requireMail: Boolean!
 
+    """ If the product requires seller to send end user mobile number info """
     requirePhone: Boolean!
 
+    """ If the product requires seller to send end user extra info """
+    requireOther: Boolean!
+
+    """ Whether the product requires user identity """
+    requiresUserIdentity: Boolean!
+
+    """ Terms and conditions of the product represented in a string """
+    tc: String!
+
+    """ URL Image of the product """
+    urlImage: String!
+
+    """ Array containing the countries where the product can be found """
+    countries: [Country!]!
+
+    """ *** """
+    variants: [Variant!]
+
+    """ Array with categories where the product can be found """
+    categories: [Category!]
+}
+
+type ProductAdmin {
+
+    """ Product ID """
+    id: ID!
+
+    """ Indicates if the product is available """
+    available: Boolean!
+
+    """ Product currency """
+    currency: String!
+
+    """ Product description """
+    description: String!
+
+    """ Product custom description """
+    customDescription: String!
+    
+
+    """ Absolute product discount, expressed in net amount """
+    discountAbsolute: Float!
+
+    """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
+    discountPercentage: Float!
+
+    """ Fixed maximum price of the product """
+    fixedMaxPrice: Float!
+
+    """ Fixed minimum price of the product """
+    fixedMinPrice: Float!
+
+    """ Product name """
+    fullName: String!
+
+    """ Product custom name """
+    customFullName: String!
+
+    """ Indicates if the product has a discount """
+    hasDiscount: Boolean!
+
+    """ Indicates if the product has a discount """
+    customDiscount: Float!
+
+    """ Indicates if the product has a fixed price """
+    isFixedPrice: Boolean!
+
+    """ Indicates if the product is premium """
+    isPremium: Boolean!
+
+    """ Product country, expressed with ISO 3166 Alpha-2 code """
+    locale: String!
+
+    """ Online terms and conditions of the product represented in a string, in some cases with urls in between """
+    onlineTc: String!
+
+    """ Original product ID """
+    originalID: String!
+
+    """ MetaProvider ID """
+    metaProviderID: Int!
+
+    """ MetaProvider data """
+    metaProvider: MetaProvider!
+
+    """ Provider ID """
+    providerID: Int!
+
+    """ Provider data """
+    provider: Provider!
+
+    """ Instructions to redeem the product """
+    redeemInstructions: String!
+
+    """ Site to redeem the product """
+    redeemSite: String!
+
+    """ If the product requires seller to send end user mail info """
+    requireMail: Boolean!
+
+    """ If the product requires seller to send end user mobile number info """
+    requirePhone: Boolean!
+
+    """ If the product requires seller to send end user extra info """
     requireOther: Boolean!
 
     """ Whether the product requires user identity """
@@ -278,7 +387,7 @@ input ProductFilter {
     """ Product name """
     fullName: String
 
-    """ Product premium """
+    """ Product premium flag"""
     isPremium: Boolean
 }
 

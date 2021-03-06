@@ -119,6 +119,42 @@ type ComplexityRoot struct {
 		Variants             func(childComplexity int) int
 	}
 
+	ProductAdmin struct {
+		Available            func(childComplexity int) int
+		Categories           func(childComplexity int) int
+		Countries            func(childComplexity int) int
+		Currency             func(childComplexity int) int
+		CustomDescription    func(childComplexity int) int
+		CustomDiscount       func(childComplexity int) int
+		CustomFullName       func(childComplexity int) int
+		Description          func(childComplexity int) int
+		DiscountAbsolute     func(childComplexity int) int
+		DiscountPercentage   func(childComplexity int) int
+		FixedMaxPrice        func(childComplexity int) int
+		FixedMinPrice        func(childComplexity int) int
+		FullName             func(childComplexity int) int
+		HasDiscount          func(childComplexity int) int
+		ID                   func(childComplexity int) int
+		IsFixedPrice         func(childComplexity int) int
+		IsPremium            func(childComplexity int) int
+		Locale               func(childComplexity int) int
+		MetaProvider         func(childComplexity int) int
+		MetaProviderID       func(childComplexity int) int
+		OnlineTc             func(childComplexity int) int
+		OriginalID           func(childComplexity int) int
+		Provider             func(childComplexity int) int
+		ProviderID           func(childComplexity int) int
+		RedeemInstructions   func(childComplexity int) int
+		RedeemSite           func(childComplexity int) int
+		RequireMail          func(childComplexity int) int
+		RequireOther         func(childComplexity int) int
+		RequirePhone         func(childComplexity int) int
+		RequiresUserIdentity func(childComplexity int) int
+		Tc                   func(childComplexity int) int
+		URLImage             func(childComplexity int) int
+		Variants             func(childComplexity int) int
+	}
+
 	Provider struct {
 		ID             func(childComplexity int) int
 		Image          func(childComplexity int) int
@@ -154,6 +190,7 @@ type ComplexityRoot struct {
 		Clients               func(childComplexity int, filter *model.ClientFilter, limit *int, offset *int) int
 		Countries             func(childComplexity int, limit *int, offset *int) int
 		Products              func(childComplexity int, filter *model.ProductFilter, limit *int, offset *int) int
+		ProductsAdmin         func(childComplexity int, filter *model.ProductFilter, limit *int, offset *int) int
 		ProductsByPhoneNumber func(childComplexity int, phoneNumber model.PhoneNumber, limit *int, offset *int) int
 		Providers             func(childComplexity int, filter *model.ProviderFilter, limit *int, offset *int) int
 		Purchases             func(childComplexity int, filter *model.PurchaseFilter, limit *int, offset *int) int
@@ -172,6 +209,7 @@ type QueryResolver interface {
 	Categories(ctx context.Context, limit *int, offset *int) ([]*model.Category, error)
 	Purchases(ctx context.Context, filter *model.PurchaseFilter, limit *int, offset *int) ([]*model.Purchase, error)
 	Products(ctx context.Context, filter *model.ProductFilter, limit *int, offset *int) ([]*model.Product, error)
+	ProductsAdmin(ctx context.Context, filter *model.ProductFilter, limit *int, offset *int) ([]*model.ProductAdmin, error)
 	Providers(ctx context.Context, filter *model.ProviderFilter, limit *int, offset *int) ([]*model.Provider, error)
 	Countries(ctx context.Context, limit *int, offset *int) ([]*model.Country, error)
 	ProductsByPhoneNumber(ctx context.Context, phoneNumber model.PhoneNumber, limit *int, offset *int) ([]*model.Product, error)
@@ -605,6 +643,237 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Product.Variants(childComplexity), true
 
+	case "ProductAdmin.available":
+		if e.complexity.ProductAdmin.Available == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Available(childComplexity), true
+
+	case "ProductAdmin.categories":
+		if e.complexity.ProductAdmin.Categories == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Categories(childComplexity), true
+
+	case "ProductAdmin.countries":
+		if e.complexity.ProductAdmin.Countries == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Countries(childComplexity), true
+
+	case "ProductAdmin.currency":
+		if e.complexity.ProductAdmin.Currency == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Currency(childComplexity), true
+
+	case "ProductAdmin.customDescription":
+		if e.complexity.ProductAdmin.CustomDescription == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.CustomDescription(childComplexity), true
+
+	case "ProductAdmin.customDiscount":
+		if e.complexity.ProductAdmin.CustomDiscount == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.CustomDiscount(childComplexity), true
+
+	case "ProductAdmin.customFullName":
+		if e.complexity.ProductAdmin.CustomFullName == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.CustomFullName(childComplexity), true
+
+	case "ProductAdmin.description":
+		if e.complexity.ProductAdmin.Description == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Description(childComplexity), true
+
+	case "ProductAdmin.discountAbsolute":
+		if e.complexity.ProductAdmin.DiscountAbsolute == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.DiscountAbsolute(childComplexity), true
+
+	case "ProductAdmin.discountPercentage":
+		if e.complexity.ProductAdmin.DiscountPercentage == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.DiscountPercentage(childComplexity), true
+
+	case "ProductAdmin.fixedMaxPrice":
+		if e.complexity.ProductAdmin.FixedMaxPrice == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.FixedMaxPrice(childComplexity), true
+
+	case "ProductAdmin.fixedMinPrice":
+		if e.complexity.ProductAdmin.FixedMinPrice == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.FixedMinPrice(childComplexity), true
+
+	case "ProductAdmin.fullName":
+		if e.complexity.ProductAdmin.FullName == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.FullName(childComplexity), true
+
+	case "ProductAdmin.hasDiscount":
+		if e.complexity.ProductAdmin.HasDiscount == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.HasDiscount(childComplexity), true
+
+	case "ProductAdmin.id":
+		if e.complexity.ProductAdmin.ID == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.ID(childComplexity), true
+
+	case "ProductAdmin.isFixedPrice":
+		if e.complexity.ProductAdmin.IsFixedPrice == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.IsFixedPrice(childComplexity), true
+
+	case "ProductAdmin.isPremium":
+		if e.complexity.ProductAdmin.IsPremium == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.IsPremium(childComplexity), true
+
+	case "ProductAdmin.locale":
+		if e.complexity.ProductAdmin.Locale == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Locale(childComplexity), true
+
+	case "ProductAdmin.metaProvider":
+		if e.complexity.ProductAdmin.MetaProvider == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.MetaProvider(childComplexity), true
+
+	case "ProductAdmin.metaProviderID":
+		if e.complexity.ProductAdmin.MetaProviderID == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.MetaProviderID(childComplexity), true
+
+	case "ProductAdmin.onlineTc":
+		if e.complexity.ProductAdmin.OnlineTc == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.OnlineTc(childComplexity), true
+
+	case "ProductAdmin.originalID":
+		if e.complexity.ProductAdmin.OriginalID == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.OriginalID(childComplexity), true
+
+	case "ProductAdmin.provider":
+		if e.complexity.ProductAdmin.Provider == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Provider(childComplexity), true
+
+	case "ProductAdmin.providerID":
+		if e.complexity.ProductAdmin.ProviderID == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.ProviderID(childComplexity), true
+
+	case "ProductAdmin.redeemInstructions":
+		if e.complexity.ProductAdmin.RedeemInstructions == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.RedeemInstructions(childComplexity), true
+
+	case "ProductAdmin.redeemSite":
+		if e.complexity.ProductAdmin.RedeemSite == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.RedeemSite(childComplexity), true
+
+	case "ProductAdmin.requireMail":
+		if e.complexity.ProductAdmin.RequireMail == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.RequireMail(childComplexity), true
+
+	case "ProductAdmin.requireOther":
+		if e.complexity.ProductAdmin.RequireOther == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.RequireOther(childComplexity), true
+
+	case "ProductAdmin.requirePhone":
+		if e.complexity.ProductAdmin.RequirePhone == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.RequirePhone(childComplexity), true
+
+	case "ProductAdmin.requiresUserIdentity":
+		if e.complexity.ProductAdmin.RequiresUserIdentity == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.RequiresUserIdentity(childComplexity), true
+
+	case "ProductAdmin.tc":
+		if e.complexity.ProductAdmin.Tc == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Tc(childComplexity), true
+
+	case "ProductAdmin.urlImage":
+		if e.complexity.ProductAdmin.URLImage == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.URLImage(childComplexity), true
+
+	case "ProductAdmin.variants":
+		if e.complexity.ProductAdmin.Variants == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.Variants(childComplexity), true
+
 	case "Provider.id":
 		if e.complexity.Provider.ID == nil {
 			break
@@ -821,6 +1090,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Products(childComplexity, args["filter"].(*model.ProductFilter), args["limit"].(*int), args["offset"].(*int)), true
 
+	case "Query.products_admin":
+		if e.complexity.Query.ProductsAdmin == nil {
+			break
+		}
+
+		args, err := ec.field_Query_products_admin_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProductsAdmin(childComplexity, args["filter"].(*model.ProductFilter), args["limit"].(*int), args["offset"].(*int)), true
+
 	case "Query.productsByPhoneNumber":
 		if e.complexity.Query.ProductsByPhoneNumber == nil {
 			break
@@ -952,6 +1233,9 @@ type Query {
 
     """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
     products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!
+
+    """ Retrieve the information for a set of products with admin info, optionally filtering by ID, country or provider's ID """
+    products_admin(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [ProductAdmin!]!
 
     """ Retrieve data for all providers """
     providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
@@ -1176,10 +1460,116 @@ type Product {
     """ Site to redeem the product """
     redeemSite: String!
 
+    """ If the product requires seller to send end user mail info """
     requireMail: Boolean!
 
+    """ If the product requires seller to send end user mobile number info """
     requirePhone: Boolean!
 
+    """ If the product requires seller to send end user extra info """
+    requireOther: Boolean!
+
+    """ Whether the product requires user identity """
+    requiresUserIdentity: Boolean!
+
+    """ Terms and conditions of the product represented in a string """
+    tc: String!
+
+    """ URL Image of the product """
+    urlImage: String!
+
+    """ Array containing the countries where the product can be found """
+    countries: [Country!]!
+
+    """ *** """
+    variants: [Variant!]
+
+    """ Array with categories where the product can be found """
+    categories: [Category!]
+}
+
+type ProductAdmin {
+
+    """ Product ID """
+    id: ID!
+
+    """ Indicates if the product is available """
+    available: Boolean!
+
+    """ Product currency """
+    currency: String!
+
+    """ Product description """
+    description: String!
+
+    """ Product custom description """
+    customDescription: String!
+    
+
+    """ Absolute product discount, expressed in net amount """
+    discountAbsolute: Float!
+
+    """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
+    discountPercentage: Float!
+
+    """ Fixed maximum price of the product """
+    fixedMaxPrice: Float!
+
+    """ Fixed minimum price of the product """
+    fixedMinPrice: Float!
+
+    """ Product name """
+    fullName: String!
+
+    """ Product custom name """
+    customFullName: String!
+
+    """ Indicates if the product has a discount """
+    hasDiscount: Boolean!
+
+    """ Indicates if the product has a discount """
+    customDiscount: Float!
+
+    """ Indicates if the product has a fixed price """
+    isFixedPrice: Boolean!
+
+    """ Indicates if the product is premium """
+    isPremium: Boolean!
+
+    """ Product country, expressed with ISO 3166 Alpha-2 code """
+    locale: String!
+
+    """ Online terms and conditions of the product represented in a string, in some cases with urls in between """
+    onlineTc: String!
+
+    """ Original product ID """
+    originalID: String!
+
+    """ MetaProvider ID """
+    metaProviderID: Int!
+
+    """ MetaProvider data """
+    metaProvider: MetaProvider!
+
+    """ Provider ID """
+    providerID: Int!
+
+    """ Provider data """
+    provider: Provider!
+
+    """ Instructions to redeem the product """
+    redeemInstructions: String!
+
+    """ Site to redeem the product """
+    redeemSite: String!
+
+    """ If the product requires seller to send end user mail info """
+    requireMail: Boolean!
+
+    """ If the product requires seller to send end user mobile number info """
+    requirePhone: Boolean!
+
+    """ If the product requires seller to send end user extra info """
     requireOther: Boolean!
 
     """ Whether the product requires user identity """
@@ -1215,7 +1605,7 @@ input ProductFilter {
     """ Product name """
     fullName: String
 
-    """ Product premium """
+    """ Product premium flag"""
     isPremium: Boolean
 }
 
@@ -1450,6 +1840,39 @@ func (ec *executionContext) field_Query_productsByPhoneNumber_args(ctx context.C
 		}
 	}
 	args["phoneNumber"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["limit"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["limit"] = arg1
+	var arg2 *int
+	if tmp, ok := rawArgs["offset"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("offset"))
+		arg2, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["offset"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_products_admin_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.ProductFilter
+	if tmp, ok := rawArgs["filter"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("filter"))
+		arg0, err = ec.unmarshalOProductFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductFilter(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["filter"] = arg0
 	var arg1 *int
 	if tmp, ok := rawArgs["limit"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("limit"))
@@ -3658,6 +4081,1155 @@ func (ec *executionContext) _Product_categories(ctx context.Context, field graph
 	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ProductAdmin_id(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNID2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_available(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Available, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_currency(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Currency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_description(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_customDescription(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_discountAbsolute(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DiscountAbsolute, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_discountPercentage(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DiscountPercentage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_fixedMaxPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FixedMaxPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_fixedMinPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FixedMinPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_fullName(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.FullName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_customFullName(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomFullName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_hasDiscount(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.HasDiscount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_customDiscount(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomDiscount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_isFixedPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsFixedPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_isPremium(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsPremium, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_locale(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Locale, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_onlineTc(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OnlineTc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_originalID(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OriginalID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_metaProviderID(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MetaProviderID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_metaProvider(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MetaProvider, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.MetaProvider)
+	fc.Result = res
+	return ec.marshalNMetaProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐMetaProvider(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_providerID(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProviderID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_provider(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Provider, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Provider)
+	fc.Result = res
+	return ec.marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProvider(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_redeemInstructions(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RedeemInstructions, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_redeemSite(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RedeemSite, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_requireMail(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequireMail, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_requirePhone(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequirePhone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_requireOther(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequireOther, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_requiresUserIdentity(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RequiresUserIdentity, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_tc(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Tc, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_urlImage(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.URLImage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_countries(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Countries, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Country)
+	fc.Result = res
+	return ec.marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_variants(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Variants, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Variant)
+	fc.Result = res
+	return ec.marshalOVariant2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐVariantᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_categories(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Categories, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Category)
+	fc.Result = res
+	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Provider_id(ctx context.Context, field graphql.CollectedField, obj *model.Provider) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4655,6 +6227,48 @@ func (ec *executionContext) _Query_products(ctx context.Context, field graphql.C
 	res := resTmp.([]*model.Product)
 	fc.Result = res
 	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_products_admin(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_products_admin_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProductsAdmin(rctx, args["filter"].(*model.ProductFilter), args["limit"].(*int), args["offset"].(*int))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ProductAdmin)
+	fc.Result = res
+	return ec.marshalNProductAdmin2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdminᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_providers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6752,6 +8366,187 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var productAdminImplementors = []string{"ProductAdmin"}
+
+func (ec *executionContext) _ProductAdmin(ctx context.Context, sel ast.SelectionSet, obj *model.ProductAdmin) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, productAdminImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProductAdmin")
+		case "id":
+			out.Values[i] = ec._ProductAdmin_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "available":
+			out.Values[i] = ec._ProductAdmin_available(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "currency":
+			out.Values[i] = ec._ProductAdmin_currency(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "description":
+			out.Values[i] = ec._ProductAdmin_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "customDescription":
+			out.Values[i] = ec._ProductAdmin_customDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "discountAbsolute":
+			out.Values[i] = ec._ProductAdmin_discountAbsolute(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "discountPercentage":
+			out.Values[i] = ec._ProductAdmin_discountPercentage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "fixedMaxPrice":
+			out.Values[i] = ec._ProductAdmin_fixedMaxPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "fixedMinPrice":
+			out.Values[i] = ec._ProductAdmin_fixedMinPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "fullName":
+			out.Values[i] = ec._ProductAdmin_fullName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "customFullName":
+			out.Values[i] = ec._ProductAdmin_customFullName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "hasDiscount":
+			out.Values[i] = ec._ProductAdmin_hasDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "customDiscount":
+			out.Values[i] = ec._ProductAdmin_customDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isFixedPrice":
+			out.Values[i] = ec._ProductAdmin_isFixedPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "isPremium":
+			out.Values[i] = ec._ProductAdmin_isPremium(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "locale":
+			out.Values[i] = ec._ProductAdmin_locale(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "onlineTc":
+			out.Values[i] = ec._ProductAdmin_onlineTc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "originalID":
+			out.Values[i] = ec._ProductAdmin_originalID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "metaProviderID":
+			out.Values[i] = ec._ProductAdmin_metaProviderID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "metaProvider":
+			out.Values[i] = ec._ProductAdmin_metaProvider(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "providerID":
+			out.Values[i] = ec._ProductAdmin_providerID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "provider":
+			out.Values[i] = ec._ProductAdmin_provider(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "redeemInstructions":
+			out.Values[i] = ec._ProductAdmin_redeemInstructions(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "redeemSite":
+			out.Values[i] = ec._ProductAdmin_redeemSite(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requireMail":
+			out.Values[i] = ec._ProductAdmin_requireMail(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requirePhone":
+			out.Values[i] = ec._ProductAdmin_requirePhone(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requireOther":
+			out.Values[i] = ec._ProductAdmin_requireOther(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "requiresUserIdentity":
+			out.Values[i] = ec._ProductAdmin_requiresUserIdentity(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "tc":
+			out.Values[i] = ec._ProductAdmin_tc(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "urlImage":
+			out.Values[i] = ec._ProductAdmin_urlImage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "countries":
+			out.Values[i] = ec._ProductAdmin_countries(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "variants":
+			out.Values[i] = ec._ProductAdmin_variants(ctx, field, obj)
+		case "categories":
+			out.Values[i] = ec._ProductAdmin_categories(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var providerImplementors = []string{"Provider"}
 
 func (ec *executionContext) _Provider(ctx context.Context, sel ast.SelectionSet, obj *model.Provider) graphql.Marshaler {
@@ -6973,6 +8768,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_products(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "products_admin":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_products_admin(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -7500,6 +9309,53 @@ func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋcommonᚋ
 		return graphql.Null
 	}
 	return ec._Product(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNProductAdmin2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdminᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ProductAdmin) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProductAdmin2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdmin(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNProductAdmin2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdmin(ctx context.Context, sel ast.SelectionSet, v *model.ProductAdmin) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ProductAdmin(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProvider(ctx context.Context, sel ast.SelectionSet, v *model.Provider) graphql.Marshaler {

@@ -151,10 +151,13 @@ type Product struct {
 	//  Instructions to redeem the product
 	RedeemInstructions string `json:"redeemInstructions"`
 	//  Site to redeem the product
-	RedeemSite   string `json:"redeemSite"`
-	RequireMail  bool   `json:"requireMail"`
-	RequirePhone bool   `json:"requirePhone"`
-	RequireOther bool   `json:"requireOther"`
+	RedeemSite string `json:"redeemSite"`
+	//  If the product requires seller to send end user mail info
+	RequireMail bool `json:"requireMail"`
+	//  If the product requires seller to send end user mobile number info
+	RequirePhone bool `json:"requirePhone"`
+	//  If the product requires seller to send end user extra info
+	RequireOther bool `json:"requireOther"`
 	//  Whether the product requires user identity
 	RequiresUserIdentity bool `json:"requiresUserIdentity"`
 	//  Terms and conditions of the product represented in a string
@@ -169,6 +172,75 @@ type Product struct {
 	Categories []*Category `json:"categories" gorm:"many2many:product_categories;"`
 }
 
+type ProductAdmin struct {
+	//  Product ID
+	ID int `json:"id"`
+	//  Indicates if the product is available
+	Available bool `json:"available"`
+	//  Product currency
+	Currency string `json:"currency"`
+	//  Product description
+	Description string `json:"description"`
+	//  Product custom description
+	CustomDescription string `json:"customDescription"`
+	//  Absolute product discount, expressed in net amount
+	DiscountAbsolute float64 `json:"discountAbsolute"`
+	//  Product discount percentage, expressed as a decimal from 0 to 1 ***
+	DiscountPercentage float64 `json:"discountPercentage"`
+	//  Fixed maximum price of the product
+	FixedMaxPrice float64 `json:"fixedMaxPrice"`
+	//  Fixed minimum price of the product
+	FixedMinPrice float64 `json:"fixedMinPrice"`
+	//  Product name
+	FullName string `json:"fullName"`
+	//  Product custom name
+	CustomFullName string `json:"customFullName"`
+	//  Indicates if the product has a discount
+	HasDiscount bool `json:"hasDiscount"`
+	//  Indicates if the product has a discount
+	CustomDiscount float64 `json:"customDiscount"`
+	//  Indicates if the product has a fixed price
+	IsFixedPrice bool `json:"isFixedPrice"`
+	//  Indicates if the product is premium
+	IsPremium bool `json:"isPremium"`
+	//  Product country, expressed with ISO 3166 Alpha-2 code
+	Locale string `json:"locale"`
+	//  Online terms and conditions of the product represented in a string, in some cases with urls in between
+	OnlineTc string `json:"onlineTc"`
+	//  Original product ID
+	OriginalID string `json:"originalID"`
+	//  MetaProvider ID
+	MetaProviderID int `json:"metaProviderID"`
+	//  MetaProvider data
+	MetaProvider *MetaProvider `json:"metaProvider"`
+	//  Provider ID
+	ProviderID int `json:"providerID"`
+	//  Provider data
+	Provider *Provider `json:"provider"`
+	//  Instructions to redeem the product
+	RedeemInstructions string `json:"redeemInstructions"`
+	//  Site to redeem the product
+	RedeemSite string `json:"redeemSite"`
+	//  If the product requires seller to send end user mail info
+	RequireMail bool `json:"requireMail"`
+	//  If the product requires seller to send end user mobile number info
+	RequirePhone bool `json:"requirePhone"`
+	//  If the product requires seller to send end user extra info
+	RequireOther bool `json:"requireOther"`
+	//  Whether the product requires user identity
+	RequiresUserIdentity bool `json:"requiresUserIdentity"`
+	//  Terms and conditions of the product represented in a string
+	Tc string `json:"tc"`
+	//  URL Image of the product
+	URLImage string `json:"urlImage"`
+	//  Array containing the countries where the product can be found
+	Countries []*Country `json:"countries"`
+	//  ***
+	Variants []*Variant `json:"variants"`
+	//  Array with categories where the product can be found
+	Categories []*Category `json:"categories"`
+}
+
 type ProductFilter struct {
 	//  Product ID
 	ID *int `json:"id"`
@@ -178,7 +250,7 @@ type ProductFilter struct {
 	ProviderID *int `json:"providerID"`
 	//  Product name
 	FullName *string `json:"fullName"`
-	//  Product premium
+	//  Product premium flag
 	IsPremium *bool `json:"isPremium"`
 }
 

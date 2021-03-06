@@ -11,6 +11,7 @@ import (
 	"github.com/bitcou/common/auth"
 	"github.com/bitcou/common/dbmodels/graph/generated"
 	"github.com/bitcou/common/dbmodels/graph/model"
+	commonErrors "github.com/bitcou/common/errors"
 )
 
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
@@ -42,6 +43,20 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 	fmt.Println("after procesiing", filter)
 
 	return r.ProductsResolver(filter, limit, offset)
+}
+
+func (r *queryResolver) ProductsAdmin(ctx context.Context, filter *model.ProductFilter, limit *int, offset *int) ([]*model.ProductAdmin, error) {
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		return nil, errors.New("no client info")
+	}
+	if !clientInfo.IsPremium {
+		return nil, commonErrors.ErrorAdminOnly
+	}
+	fmt.Println("before procesiing", filter)
+	fmt.Println("clientInfo", clientInfo)
+
+	return r.ProductsAdminResolver(filter, limit, offset)
 }
 
 func (r *queryResolver) Providers(ctx context.Context, filter *model.ProviderFilter, limit *int, offset *int) ([]*model.Provider, error) {
