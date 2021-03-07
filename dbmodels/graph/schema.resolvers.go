@@ -7,6 +7,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"github.com/bitcou/common/auth"
 	"github.com/bitcou/common/dbmodels/graph/generated"
@@ -15,6 +16,21 @@ import (
 )
 
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
+	// TODO if isAdmin return all clients
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		log.Println("no client found")
+		return nil, errors.New("no client info")
+	}
+	// TODO if is admin return all client info.
+	log.Println("clientInfo", clientInfo)
+	if filter == nil {
+		filter = &model.ClientFilter{
+			ID: &clientInfo.ID,
+		}
+	} else {
+		filter.ID = &clientInfo.ID
+	}
 	return r.ClientsResolver(filter, limit, offset)
 }
 
@@ -23,16 +39,30 @@ func (r *queryResolver) Categories(ctx context.Context, limit *int, offset *int)
 }
 
 func (r *queryResolver) Purchases(ctx context.Context, filter *model.PurchaseFilter, limit *int, offset *int) ([]*model.Purchase, error) {
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		log.Println("no client found")
+		return nil, errors.New("no client info")
+	}
+	// TODO if is admin return all client info.
+	log.Println("clientInfo", clientInfo)
+	if filter == nil {
+		filter = &model.PurchaseFilter{
+			ClientID: &clientInfo.ID,
+		}
+	} else {
+		filter.ClientID = &clientInfo.ID
+	}
 	return r.PurchasesResolver(filter, limit, offset)
 }
 
 func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilter, limit *int, offset *int) ([]*model.Product, error) {
 	clientInfo := auth.ForContext(ctx)
 	if clientInfo == nil {
+		log.Println("no client found")
 		return nil, errors.New("no client info")
 	}
-	fmt.Println("before procesiing", filter)
-	fmt.Println("clientInfo", clientInfo)
+	log.Println("clientInfo", clientInfo)
 	if filter == nil {
 		filter = &model.ProductFilter{
 			IsPremium: &clientInfo.IsPremium,
@@ -40,7 +70,6 @@ func (r *queryResolver) Products(ctx context.Context, filter *model.ProductFilte
 	} else {
 		filter.IsPremium = &clientInfo.IsPremium
 	}
-	fmt.Println("after procesiing", filter)
 
 	return r.ProductsResolver(filter, limit, offset)
 }
