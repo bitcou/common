@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"errors"
 	"net/http"
@@ -33,8 +33,6 @@ func Middleware(db *gorm.DB) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			c := r.Header.Get("X-API-Key")
-			fmt.Println(c)
-
 			// Allow unauthenticated users in, we enable this only to allow the graphql playground to work,
 			// for a production release this may be not the case, blocking non auth users at this point prevents
 			// access to playground.
@@ -70,6 +68,9 @@ func Middleware(db *gorm.DB) func(http.Handler) http.Handler {
 // ForContext finds the user from the context. REQUIRES Middleware to have run.
 func ForContext(ctx context.Context) *model.Client {
 	raw, _ := ctx.Value(userCtxKey).(*model.Client)
+	if raw == nil {
+		log.Println("could not find value in context")
+	}
 	return raw
 }
 
