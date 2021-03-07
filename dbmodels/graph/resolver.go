@@ -126,7 +126,7 @@ func (r *queryResolver) ProductsResolver(filter *model.ProductFilter, limit *int
 			query = query.Where("provider_id = ?", *filter.ProviderID)
 		}
 		if filter.FullName != nil && *filter.FullName != "" {
-			query = query.Where("full_name LIKE ?", fmt.Sprintf("%%%s%%", *filter.FullName))
+			query = query.Where("full_name ILIKE ?", fmt.Sprintf("%%%s%%", *filter.FullName))
 		}
 		if filter.IsPremium != nil && !*filter.IsPremium {
 			query = query.Where("is_premium = FALSE")
