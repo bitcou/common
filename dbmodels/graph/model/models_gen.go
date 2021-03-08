@@ -239,6 +239,8 @@ type ProductAdmin struct {
 	Variants []*Variant `json:"variants"`
 	//  Array with categories where the product can be found
 	Categories []*Category `json:"categories" gorm:"many2many:product_categories;"`
+	//  Special field for provider specific product info. Ex store for Baluwo or ean for Ding.
+	ProductType string `json:"ProductType"`
 }
 
 type ProductFilter struct {

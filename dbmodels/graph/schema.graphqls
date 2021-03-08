@@ -371,6 +371,9 @@ type ProductAdmin {
 
     """ Array with categories where the product can be found """
     categories: [Category!]
+
+    """ Special field for provider specific product info. Ex store for Baluwo or ean for Ding. """
+    ProductType: String!
 }
 
 input ProductFilter {

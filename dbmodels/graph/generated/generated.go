@@ -142,6 +142,7 @@ type ComplexityRoot struct {
 		MetaProviderID       func(childComplexity int) int
 		OnlineTc             func(childComplexity int) int
 		OriginalID           func(childComplexity int) int
+		ProductType          func(childComplexity int) int
 		Provider             func(childComplexity int) int
 		ProviderID           func(childComplexity int) int
 		RedeemInstructions   func(childComplexity int) int
@@ -797,6 +798,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ProductAdmin.OriginalID(childComplexity), true
+
+	case "ProductAdmin.ProductType":
+		if e.complexity.ProductAdmin.ProductType == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.ProductType(childComplexity), true
 
 	case "ProductAdmin.provider":
 		if e.complexity.ProductAdmin.Provider == nil {
@@ -1597,6 +1605,9 @@ type ProductAdmin {
 
     """ Array with categories where the product can be found """
     categories: [Category!]
+
+    """ Special field for provider specific product info. Ex store for Baluwo or ean for Ding. """
+    ProductType: String!
 }
 
 input ProductFilter {
@@ -5241,6 +5252,41 @@ func (ec *executionContext) _ProductAdmin_categories(ctx context.Context, field 
 	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ProductAdmin_ProductType(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProductType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Provider_id(ctx context.Context, field graphql.CollectedField, obj *model.Provider) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -8582,6 +8628,11 @@ func (ec *executionContext) _ProductAdmin(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._ProductAdmin_variants(ctx, field, obj)
 		case "categories":
 			out.Values[i] = ec._ProductAdmin_categories(ctx, field, obj)
+		case "ProductType":
+			out.Values[i] = ec._ProductAdmin_ProductType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
