@@ -11,7 +11,7 @@ type Query {
     categories(limit: Int = 0, offset: Int = 0): [Category!]
 
     """ *** Retrieve data for all purchases """
-    purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]
+    purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]!
 
     """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
     products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!

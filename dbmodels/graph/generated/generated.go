@@ -1245,7 +1245,7 @@ type Query {
     categories(limit: Int = 0, offset: Int = 0): [Category!]
 
     """ *** Retrieve data for all purchases """
-    purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]
+    purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]!
 
     """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
     products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!
@@ -6237,11 +6237,14 @@ func (ec *executionContext) _Query_purchases(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Purchase)
 	fc.Result = res
-	return ec.marshalOPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
+	return ec.marshalNPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_products(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8854,6 +8857,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_purchases(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "products":
@@ -9468,6 +9474,43 @@ func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommon�
 		return graphql.Null
 	}
 	return ec._Provider(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Purchase) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchase(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchase(ctx context.Context, sel ast.SelectionSet, v *model.Purchase) graphql.Marshaler {
