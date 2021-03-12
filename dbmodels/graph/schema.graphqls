@@ -109,6 +109,15 @@ type Client {
 
     """ Client premium status """
     isPremium: Boolean!
+
+    """ Client login username """
+    userName: String!
+
+    """ Client login hashed password """
+    password: String!
+
+    """ Float Account Balance """
+    balance: Float!
 }
 
 input ClientFilter {

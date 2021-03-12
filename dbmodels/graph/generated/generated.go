@@ -63,6 +63,7 @@ type ComplexityRoot struct {
 		AddressPc       func(childComplexity int) int
 		AddressState    func(childComplexity int) int
 		AddressStreet   func(childComplexity int) int
+		Balance         func(childComplexity int) int
 		ContactEmail    func(childComplexity int) int
 		ContactLastName func(childComplexity int) int
 		ContactName     func(childComplexity int) int
@@ -71,8 +72,10 @@ type ComplexityRoot struct {
 		IsPremium       func(childComplexity int) int
 		MonthlyFee      func(childComplexity int) int
 		Name            func(childComplexity int) int
+		Password        func(childComplexity int) int
 		Purchases       func(childComplexity int) int
 		Tc              func(childComplexity int) int
+		UserName        func(childComplexity int) int
 	}
 
 	Country struct {
@@ -330,6 +333,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Client.AddressStreet(childComplexity), true
 
+	case "Client.balance":
+		if e.complexity.Client.Balance == nil {
+			break
+		}
+
+		return e.complexity.Client.Balance(childComplexity), true
+
 	case "Client.contactEmail":
 		if e.complexity.Client.ContactEmail == nil {
 			break
@@ -386,6 +396,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Client.Name(childComplexity), true
 
+	case "Client.password":
+		if e.complexity.Client.Password == nil {
+			break
+		}
+
+		return e.complexity.Client.Password(childComplexity), true
+
 	case "Client.purchases":
 		if e.complexity.Client.Purchases == nil {
 			break
@@ -399,6 +416,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Client.Tc(childComplexity), true
+
+	case "Client.userName":
+		if e.complexity.Client.UserName == nil {
+			break
+		}
+
+		return e.complexity.Client.UserName(childComplexity), true
 
 	case "Country.id":
 		if e.complexity.Country.ID == nil {
@@ -1343,6 +1367,15 @@ type Client {
 
     """ Client premium status """
     isPremium: Boolean!
+
+    """ Client login username """
+    userName: String!
+
+    """ Client login hashed password """
+    password: String!
+
+    """ Float Account Balance """
+    balance: Float!
 }
 
 input ClientFilter {
@@ -2885,6 +2918,111 @@ func (ec *executionContext) _Client_isPremium(ctx context.Context, field graphql
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Client_userName(ctx context.Context, field graphql.CollectedField, obj *model.Client) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Client",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserName, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Client_password(ctx context.Context, field graphql.CollectedField, obj *model.Client) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Client",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Password, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Client_balance(ctx context.Context, field graphql.CollectedField, obj *model.Client) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Client",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Balance, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Country_id(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
@@ -8215,6 +8353,21 @@ func (ec *executionContext) _Client(ctx context.Context, sel ast.SelectionSet, o
 			out.Values[i] = ec._Client_purchases(ctx, field, obj)
 		case "isPremium":
 			out.Values[i] = ec._Client_isPremium(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "userName":
+			out.Values[i] = ec._Client_userName(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "password":
+			out.Values[i] = ec._Client_password(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "balance":
+			out.Values[i] = ec._Client_balance(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

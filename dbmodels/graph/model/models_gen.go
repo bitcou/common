@@ -57,6 +57,12 @@ type Client struct {
 	Purchases []*Purchase `json:"purchases"`
 	//  Client premium status
 	IsPremium bool `json:"isPremium"`
+	//  Client login username
+	UserName string `json:"userName"`
+	//  Client login hashed password
+	Password string `json:"password"`
+	//  Float Account Balance
+	Balance float64 `json:"balance"`
 }
 
 type ClientFilter struct {
