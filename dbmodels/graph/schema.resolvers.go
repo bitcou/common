@@ -100,6 +100,10 @@ func (r *queryResolver) ProductsByPhoneNumber(ctx context.Context, phoneNumber m
 	return r.ProductsByPhoneNumberResolver(phoneNumber, limit, offset)
 }
 
+func (r *queryResolver) AccountInfo(ctx context.Context, username string, password string) (*model.Client, error) {
+	return r.ClientInfoResolver(username, password)
+}
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 

@@ -63,6 +63,8 @@ type Client struct {
 	Password string `json:"password"`
 	//  Float Account Balance
 	Balance float64 `json:"balance"`
+	//  ApiKeys
+	APIKeys []*APIKey `json:"apiKeys"`
 }
 
 type ClientFilter struct {

@@ -58,6 +58,7 @@ type ComplexityRoot struct {
 	}
 
 	Client struct {
+		APIKeys         func(childComplexity int) int
 		AddressCity     func(childComplexity int) int
 		AddressCountry  func(childComplexity int) int
 		AddressPc       func(childComplexity int) int
@@ -190,6 +191,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
+		AccountInfo           func(childComplexity int, username string, password string) int
 		Categories            func(childComplexity int, limit *int, offset *int) int
 		Clients               func(childComplexity int, filter *model.ClientFilter, limit *int, offset *int) int
 		Countries             func(childComplexity int, limit *int, offset *int) int
@@ -218,6 +220,7 @@ type QueryResolver interface {
 	Providers(ctx context.Context, filter *model.ProviderFilter, limit *int, offset *int) ([]*model.Provider, error)
 	Countries(ctx context.Context, limit *int, offset *int) ([]*model.Country, error)
 	ProductsByPhoneNumber(ctx context.Context, phoneNumber model.PhoneNumber, limit *int, offset *int) ([]*model.Product, error)
+	AccountInfo(ctx context.Context, username string, password string) (*model.Client, error)
 }
 
 type executableSchema struct {
@@ -297,6 +300,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Category.Products(childComplexity), true
+
+	case "Client.apiKeys":
+		if e.complexity.Client.APIKeys == nil {
+			break
+		}
+
+		return e.complexity.Client.APIKeys(childComplexity), true
 
 	case "Client.addressCity":
 		if e.complexity.Client.AddressCity == nil {
@@ -1075,6 +1085,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Purchase.TransactionID(childComplexity), true
 
+	case "Query.accountInfo":
+		if e.complexity.Query.AccountInfo == nil {
+			break
+		}
+
+		args, err := ec.field_Query_accountInfo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.AccountInfo(childComplexity, args["username"].(string), args["password"].(string)), true
+
 	case "Query.categories":
 		if e.complexity.Query.Categories == nil {
 			break
@@ -1263,10 +1285,10 @@ var sources = []*ast.Source{
 type Query {
 
     """ *** Retrieve data for all clients """
-    clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]
+    clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]!
 
     """ *** Retrieve data for all categories """
-    categories(limit: Int = 0, offset: Int = 0): [Category!]
+    categories(limit: Int = 0, offset: Int = 0): [Category!]!
 
     """ *** Retrieve data for all purchases """
     purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]!
@@ -1281,10 +1303,13 @@ type Query {
     providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
 
     """ Retrieve data for all countries """
-    countries(limit: Int = 0, offset: Int = 0): [Country!]
+    countries(limit: Int = 0, offset: Int = 0): [Country!]!
 
     """ Retrieve the information the products that are available for that phone number """
-    productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]
+    productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]!
+
+    """ Retrieve the log in information for a user """
+    accountInfo(username: String!, password: String!): Client!
 }
 
 type Category {
@@ -1376,6 +1401,9 @@ type Client {
 
     """ Float Account Balance """
     balance: Float!
+
+    """ ApiKeys """
+    apiKeys: [ApiKey!]!
 }
 
 input ClientFilter {
@@ -1799,6 +1827,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_accountInfo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["username"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["username"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["password"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["password"] = arg1
 	return args, nil
 }
 
@@ -3023,6 +3075,41 @@ func (ec *executionContext) _Client_balance(ctx context.Context, field graphql.C
 	res := resTmp.(float64)
 	fc.Result = res
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Client_apiKeys(ctx context.Context, field graphql.CollectedField, obj *model.Client) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Client",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.APIKeys, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.APIKey)
+	fc.Result = res
+	return ec.marshalNApiKey2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAPIKeyᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Country_id(ctx context.Context, field graphql.CollectedField, obj *model.Country) (ret graphql.Marshaler) {
@@ -6297,11 +6384,14 @@ func (ec *executionContext) _Query_clients(ctx context.Context, field graphql.Co
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Client)
 	fc.Result = res
-	return ec.marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx, field.Selections, res)
+	return ec.marshalNClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_categories(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6336,11 +6426,14 @@ func (ec *executionContext) _Query_categories(ctx context.Context, field graphql
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Category)
 	fc.Result = res
-	return ec.marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
+	return ec.marshalNCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_purchases(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6540,11 +6633,14 @@ func (ec *executionContext) _Query_countries(ctx context.Context, field graphql.
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Country)
 	fc.Result = res
-	return ec.marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
+	return ec.marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_productsByPhoneNumber(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -6579,11 +6675,56 @@ func (ec *executionContext) _Query_productsByPhoneNumber(ctx context.Context, fi
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.([]*model.Product)
 	fc.Result = res
-	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+	return ec.marshalNProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_accountInfo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_accountInfo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().AccountInfo(rctx, args["username"].(string), args["password"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Client)
+	fc.Result = res
+	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -8371,6 +8512,11 @@ func (ec *executionContext) _Client(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "apiKeys":
+			out.Values[i] = ec._Client_apiKeys(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8988,6 +9134,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_clients(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "categories":
@@ -8999,6 +9148,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_categories(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "purchases":
@@ -9063,6 +9215,9 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_countries(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "productsByPhoneNumber":
@@ -9074,6 +9229,23 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_productsByPhoneNumber(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "accountInfo":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_accountInfo(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "__type":
@@ -9383,6 +9555,53 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) marshalNApiKey2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAPIKeyᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.APIKey) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNApiKey2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAPIKey(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
+func (ec *executionContext) marshalNApiKey2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAPIKey(ctx context.Context, sel ast.SelectionSet, v *model.APIKey) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ApiKey(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -9398,6 +9617,43 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
+func (ec *executionContext) marshalNCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategoryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Category) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategory(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
+}
+
 func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCategory(ctx context.Context, sel ast.SelectionSet, v *model.Category) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -9406,6 +9662,47 @@ func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommon�
 		return graphql.Null
 	}
 	return ec._Category(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNClient2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx context.Context, sel ast.SelectionSet, v model.Client) graphql.Marshaler {
+	return ec._Client(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Client) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+	return ret
 }
 
 func (ec *executionContext) marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx context.Context, sel ast.SelectionSet, v *model.Client) graphql.Marshaler {
@@ -9994,92 +10291,12 @@ func (ec *executionContext) marshalOCategory2ᚕᚖgithubᚗcomᚋbitcouᚋcommo
 	return ret
 }
 
-func (ec *executionContext) marshalOClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Client) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
-}
-
 func (ec *executionContext) unmarshalOClientFilter2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientFilter(ctx context.Context, v interface{}) (*model.ClientFilter, error) {
 	if v == nil {
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputClientFilter(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Country) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCountry2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountry(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-	return ret
 }
 
 func (ec *executionContext) unmarshalODateRange2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐDateRange(ctx context.Context, v interface{}) (*model.DateRange, error) {

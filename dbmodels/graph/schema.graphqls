@@ -5,10 +5,10 @@
 type Query {
 
     """ *** Retrieve data for all clients """
-    clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]
+    clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]!
 
     """ *** Retrieve data for all categories """
-    categories(limit: Int = 0, offset: Int = 0): [Category!]
+    categories(limit: Int = 0, offset: Int = 0): [Category!]!
 
     """ *** Retrieve data for all purchases """
     purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]!
@@ -23,10 +23,13 @@ type Query {
     providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
 
     """ Retrieve data for all countries """
-    countries(limit: Int = 0, offset: Int = 0): [Country!]
+    countries(limit: Int = 0, offset: Int = 0): [Country!]!
 
     """ Retrieve the information the products that are available for that phone number """
-    productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]
+    productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]!
+
+    """ Retrieve the log in information for a user """
+    accountInfo(username: String!, password: String!): Client!
 }
 
 type Category {
@@ -118,6 +121,9 @@ type Client {
 
     """ Float Account Balance """
     balance: Float!
+
+    """ ApiKeys """
+    apiKeys: [ApiKey!]!
 }
 
 input ClientFilter {

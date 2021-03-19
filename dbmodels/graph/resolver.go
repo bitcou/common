@@ -111,6 +111,19 @@ func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, 
 	return clients, nil
 }
 
+func (r *queryResolver) ClientInfoResolver(username string, password string) (*model.Client, error) {
+	var client *model.Client
+	query := r.Resolver.DB
+
+	query = query.Where(fmt.Printf("username = %s and password == %s", username, password))
+
+	err := query.Find(&client).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return client, nil
+}
+
 func (r *queryResolver) ProductsResolver(filter *model.ProductFilter, limit *int, offset *int) ([]*model.Product, error) {
 	var products []*model.Product
 	query := r.Resolver.DB
