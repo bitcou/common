@@ -85,6 +85,11 @@ type ComplexityRoot struct {
 		Products func(childComplexity int) int
 	}
 
+	CurrencyRate struct {
+		Currency func(childComplexity int) int
+		Value    func(childComplexity int) int
+	}
+
 	MetaProvider struct {
 		ID   func(childComplexity int) int
 		Name func(childComplexity int) int
@@ -98,6 +103,8 @@ type ComplexityRoot struct {
 		Description          func(childComplexity int) int
 		DiscountAbsolute     func(childComplexity int) int
 		DiscountPercentage   func(childComplexity int) int
+		EurMaxPrice          func(childComplexity int) int
+		EurMinPrice          func(childComplexity int) int
 		FixedMaxPrice        func(childComplexity int) int
 		FixedMinPrice        func(childComplexity int) int
 		FullName             func(childComplexity int) int
@@ -134,6 +141,8 @@ type ComplexityRoot struct {
 		Description          func(childComplexity int) int
 		DiscountAbsolute     func(childComplexity int) int
 		DiscountPercentage   func(childComplexity int) int
+		EurMaxPrice          func(childComplexity int) int
+		EurMinPrice          func(childComplexity int) int
 		FixedMaxPrice        func(childComplexity int) int
 		FixedMinPrice        func(childComplexity int) int
 		FullName             func(childComplexity int) int
@@ -180,6 +189,7 @@ type ComplexityRoot struct {
 		EndUserSecondNumber     func(childComplexity int) int
 		ErrorMessage            func(childComplexity int) int
 		ID                      func(childComplexity int) int
+		OriginalValue           func(childComplexity int) int
 		Product                 func(childComplexity int) int
 		ProductID               func(childComplexity int) int
 		Receipt                 func(childComplexity int) int
@@ -455,6 +465,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Country.Products(childComplexity), true
 
+	case "CurrencyRate.currency":
+		if e.complexity.CurrencyRate.Currency == nil {
+			break
+		}
+
+		return e.complexity.CurrencyRate.Currency(childComplexity), true
+
+	case "CurrencyRate.value":
+		if e.complexity.CurrencyRate.Value == nil {
+			break
+		}
+
+		return e.complexity.CurrencyRate.Value(childComplexity), true
+
 	case "MetaProvider.id":
 		if e.complexity.MetaProvider.ID == nil {
 			break
@@ -517,6 +541,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Product.DiscountPercentage(childComplexity), true
+
+	case "Product.eurMaxPrice":
+		if e.complexity.Product.EurMaxPrice == nil {
+			break
+		}
+
+		return e.complexity.Product.EurMaxPrice(childComplexity), true
+
+	case "Product.eurMinPrice":
+		if e.complexity.Product.EurMinPrice == nil {
+			break
+		}
+
+		return e.complexity.Product.EurMinPrice(childComplexity), true
 
 	case "Product.fixedMaxPrice":
 		if e.complexity.Product.FixedMaxPrice == nil {
@@ -748,6 +786,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ProductAdmin.DiscountPercentage(childComplexity), true
+
+	case "ProductAdmin.eurMaxPrice":
+		if e.complexity.ProductAdmin.EurMaxPrice == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.EurMaxPrice(childComplexity), true
+
+	case "ProductAdmin.eurMinPrice":
+		if e.complexity.ProductAdmin.EurMinPrice == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.EurMinPrice(childComplexity), true
 
 	case "ProductAdmin.fixedMaxPrice":
 		if e.complexity.ProductAdmin.FixedMaxPrice == nil {
@@ -1028,6 +1080,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Purchase.ID(childComplexity), true
+
+	case "Purchase.originalValue":
+		if e.complexity.Purchase.OriginalValue == nil {
+			break
+		}
+
+		return e.complexity.Purchase.OriginalValue(childComplexity), true
 
 	case "Purchase.product":
 		if e.complexity.Purchase.Product == nil {
@@ -1436,6 +1495,13 @@ type Country {
     products: [Product!]
 }
 
+type CurrencyRate {
+    currency: String!
+
+    value: Float!
+}
+
+
 input DateRange {
 
     """ *** Start """
@@ -1491,6 +1557,12 @@ type Product {
 
     """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
     discountPercentage: Float!
+
+    """ Fixed maximum price of the product in eur """
+    eurMaxPrice: Float!
+
+    """ Fixed minium price of the product in eur """
+    eurMinPrice: Float!
 
     """ Fixed maximum price of the product """
     fixedMaxPrice: Float!
@@ -1581,13 +1653,18 @@ type ProductAdmin {
 
     """ Product custom description """
     customDescription: String!
-    
 
     """ Absolute product discount, expressed in net amount """
     discountAbsolute: Float!
 
     """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
     discountPercentage: Float!
+
+    """ Fixed maximum price of the product in eur """
+    eurMaxPrice: Float!
+
+    """ Fixed minium price of the product in eur """
+    eurMinPrice: Float!
 
     """ Fixed maximum price of the product """
     fixedMaxPrice: Float!
@@ -1738,6 +1815,9 @@ type Purchase {
 
     """ Total purchase price in euros """
     totalValue: Float!
+
+    """ Total purchase price in the original currency """
+    originalValue: Float!
 
     """ End user name """
     EndUserName: String!
@@ -3214,6 +3294,76 @@ func (ec *executionContext) _Country_products(ctx context.Context, field graphql
 	return ec.marshalOProduct2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _CurrencyRate_currency(ctx context.Context, field graphql.CollectedField, obj *model.CurrencyRate) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CurrencyRate",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Currency, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _CurrencyRate_value(ctx context.Context, field graphql.CollectedField, obj *model.CurrencyRate) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "CurrencyRate",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Value, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _MetaProvider_id(ctx context.Context, field graphql.CollectedField, obj *model.MetaProvider) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3478,6 +3628,76 @@ func (ec *executionContext) _Product_discountPercentage(ctx context.Context, fie
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DiscountPercentage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_eurMaxPrice(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EurMaxPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Product_eurMinPrice(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Product",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EurMinPrice, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4557,6 +4777,76 @@ func (ec *executionContext) _ProductAdmin_discountPercentage(ctx context.Context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.DiscountPercentage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_eurMaxPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EurMaxPrice, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_eurMinPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.EurMinPrice, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5951,6 +6241,41 @@ func (ec *executionContext) _Purchase_totalValue(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TotalValue, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Purchase_originalValue(ctx context.Context, field graphql.CollectedField, obj *model.Purchase) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Purchase",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.OriginalValue, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8562,6 +8887,38 @@ func (ec *executionContext) _Country(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var currencyRateImplementors = []string{"CurrencyRate"}
+
+func (ec *executionContext) _CurrencyRate(ctx context.Context, sel ast.SelectionSet, obj *model.CurrencyRate) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, currencyRateImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CurrencyRate")
+		case "currency":
+			out.Values[i] = ec._CurrencyRate_currency(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "value":
+			out.Values[i] = ec._CurrencyRate_value(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var metaProviderImplementors = []string{"MetaProvider"}
 
 func (ec *executionContext) _MetaProvider(ctx context.Context, sel ast.SelectionSet, obj *model.MetaProvider) graphql.Marshaler {
@@ -8632,6 +8989,16 @@ func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "discountPercentage":
 			out.Values[i] = ec._Product_discountPercentage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eurMaxPrice":
+			out.Values[i] = ec._Product_eurMaxPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eurMinPrice":
+			out.Values[i] = ec._Product_eurMinPrice(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -8803,6 +9170,16 @@ func (ec *executionContext) _ProductAdmin(ctx context.Context, sel ast.Selection
 			}
 		case "discountPercentage":
 			out.Values[i] = ec._ProductAdmin_discountPercentage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eurMaxPrice":
+			out.Values[i] = ec._ProductAdmin_eurMaxPrice(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "eurMinPrice":
+			out.Values[i] = ec._ProductAdmin_eurMinPrice(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -9041,6 +9418,11 @@ func (ec *executionContext) _Purchase(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "totalValue":
 			out.Values[i] = ec._Purchase_totalValue(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "originalValue":
+			out.Values[i] = ec._Purchase_originalValue(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

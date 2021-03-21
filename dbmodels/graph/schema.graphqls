@@ -156,6 +156,13 @@ type Country {
     products: [Product!]
 }
 
+type CurrencyRate {
+    currency: String!
+
+    value: Float!
+}
+
+
 input DateRange {
 
     """ *** Start """
@@ -211,6 +218,12 @@ type Product {
 
     """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
     discountPercentage: Float!
+
+    """ Fixed maximum price of the product in eur """
+    eurMaxPrice: Float!
+
+    """ Fixed minium price of the product in eur """
+    eurMinPrice: Float!
 
     """ Fixed maximum price of the product """
     fixedMaxPrice: Float!
@@ -301,13 +314,18 @@ type ProductAdmin {
 
     """ Product custom description """
     customDescription: String!
-    
 
     """ Absolute product discount, expressed in net amount """
     discountAbsolute: Float!
 
     """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
     discountPercentage: Float!
+
+    """ Fixed maximum price of the product in eur """
+    eurMaxPrice: Float!
+
+    """ Fixed minium price of the product in eur """
+    eurMinPrice: Float!
 
     """ Fixed maximum price of the product """
     fixedMaxPrice: Float!
@@ -458,6 +476,9 @@ type Purchase {
 
     """ Total purchase price in euros """
     totalValue: Float!
+
+    """ Total purchase price in the original currency """
+    originalValue: Float!
 
     """ End user name """
     EndUserName: String!

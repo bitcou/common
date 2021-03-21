@@ -1,5 +1,13 @@
 package adminmodels
 
+type TaskManager struct {
+	ID        int    `json:"id"`
+	Message   string `json:"message"`
+	Name      string `json:"name"`
+	Status    string `json:"status"`
+	Timestamp int    `json:"timestamp"`
+}
+
 /*
 These models are for representing the low level arquitechture of our database, GraphQL public API should make tose of
 ToGQL() methods to only expose some models fields to the end user.

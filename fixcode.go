@@ -16,6 +16,9 @@ func main() {
 			"ID string `json:\"id\"`":                 "ID string `json:\"id\" gorm:\"primaryKey\"`",
 			"Products []*Product `json:\"products\"`": "Products []*Product `json:\"products\" gorm:\"many2many:product_countries;\"`",
 		},
+		"CurrencyRate": {
+			"Currency string  `json:\"currency\"`": "Currency string  `json:\"currency\" gorm:\"primaryKey\"`",
+		},
 		"Product": {
 			"Countries []*Country `json:\"countries\"`":    "Countries []*Country `json:\"countries\" gorm:\"many2many:product_countries;\"`",
 			"Categories []*Category `json:\"categories\"`": "Categories []*Category `json:\"categories\" gorm:\"many2many:product_categories;\"`",

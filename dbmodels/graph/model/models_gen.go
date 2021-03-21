@@ -89,6 +89,11 @@ type Country struct {
 	Products []*Product `json:"products" gorm:"many2many:product_countries;"`
 }
 
+type CurrencyRate struct {
+	Currency string  `json:"currency" gorm:"primaryKey"`
+	Value    float64 `json:"value"`
+}
+
 type DateRange struct {
 	//  *** Start
 	Start int `json:"start"`
@@ -130,6 +135,10 @@ type Product struct {
 	DiscountAbsolute float64 `json:"discountAbsolute"`
 	//  Product discount percentage, expressed as a decimal from 0 to 1 ***
 	DiscountPercentage float64 `json:"discountPercentage"`
+	//  Fixed maximum price of the product in eur
+	EurMaxPrice float64 `json:"eurMaxPrice"`
+	//  Fixed minium price of the product in eur
+	EurMinPrice float64 `json:"eurMinPrice"`
 	//  Fixed maximum price of the product
 	FixedMaxPrice float64 `json:"fixedMaxPrice"`
 	//  Fixed minimum price of the product
@@ -195,6 +204,10 @@ type ProductAdmin struct {
 	DiscountAbsolute float64 `json:"discountAbsolute"`
 	//  Product discount percentage, expressed as a decimal from 0 to 1 ***
 	DiscountPercentage float64 `json:"discountPercentage"`
+	//  Fixed maximum price of the product in eur
+	EurMaxPrice float64 `json:"eurMaxPrice"`
+	//  Fixed minium price of the product in eur
+	EurMinPrice float64 `json:"eurMinPrice"`
 	//  Fixed maximum price of the product
 	FixedMaxPrice float64 `json:"fixedMaxPrice"`
 	//  Fixed minimum price of the product
@@ -299,6 +312,8 @@ type Purchase struct {
 	Product *Product `json:"product"`
 	//  Total purchase price in euros
 	TotalValue float64 `json:"totalValue"`
+	//  Total purchase price in the original currency
+	OriginalValue float64 `json:"originalValue"`
 	//  End user name
 	EndUserName string `json:"EndUserName"`
 	//  End user email
