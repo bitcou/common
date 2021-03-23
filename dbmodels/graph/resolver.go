@@ -31,10 +31,7 @@ func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductIn
 		return p, query.Error
 	}
 
-	fmt.Println("products: ", products)
 	p = products[0]
-	fmt.Println(p)
-	fmt.Println(&p)
 	var mapChanges = make(map[string]interface{})
 
 	if product.CustomDescription != "" {
@@ -57,7 +54,7 @@ func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductIn
 	update = update.Model(&p).Updates(mapChanges)
 
 	if update.Error != nil {
-		log.Println("error updating")
+		log.Println("error updating product ", product)
 		return p, update.Error
 	}
 	return p, nil
