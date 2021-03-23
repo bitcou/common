@@ -115,7 +115,7 @@ func (r *queryResolver) ClientInfoResolver(username string, password string) (*m
 	var clients []*model.Client
 	query := r.Resolver.DB
 
-	query = query.Where("user_name = ? and password = ?", username, password).Limit(1).Find(&clients)
+	query = query.Where("user_name = ? AND password = ?", username, password).Find(&clients)
 
 	if query.Error != nil {
 		return clients[0], query.Error
