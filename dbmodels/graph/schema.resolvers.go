@@ -16,6 +16,11 @@ import (
 )
 
 func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error) {
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		log.Println("no client found")
+		return nil, errors.New("no client info")
+	}
 	return r.UpdateProductResolver(id, product)
 }
 
@@ -27,7 +32,6 @@ func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter,
 		return nil, errors.New("no client info")
 	}
 	// TODO if is admin return all client info.
-	log.Println("clientInfo", clientInfo)
 	if filter == nil {
 		filter = &model.ClientFilter{
 			ID: &clientInfo.ID,

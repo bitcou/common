@@ -20,15 +20,18 @@ type Resolver struct {
 }
 
 func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductInput) (*model.ProductAdmin, error) {
+	var products []*model.ProductAdmin
 	var p *model.ProductAdmin
 	query := r.Resolver.DB
 
-	query = query.Where("id = ?", id).First(&p)
+	query = query.Where("id = ?", id).Find(&products)
 
 	if query.Error != nil {
 		log.Println("error retrieving")
 		return p, query.Error
 	}
+
+	p = products[0]
 	var mapChanges = make(map[string]interface{})
 
 	if product.CustomDescription != "" {
@@ -51,7 +54,7 @@ func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductIn
 	update = update.Model(&p).Updates(mapChanges)
 
 	if update.Error != nil {
-		log.Println("error updating")
+		log.Println("error updating product ", product)
 		return p, update.Error
 	}
 	return p, nil
