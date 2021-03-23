@@ -115,7 +115,7 @@ func (r *queryResolver) ClientInfoResolver(username string, password string) (*m
 	var clients []*model.Client
 	query := r.Resolver.DB
 
-	query = query.Where("user_name = ? AND password = ?", username, password).Preload("ApiKey").Find(&clients)
+	query = query.Where("user_name = ? AND password = ?", username, password).Preload("apiKeys").Find(&clients)
 
 	if query.Error != nil {
 		return clients[0], query.Error
