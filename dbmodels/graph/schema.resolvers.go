@@ -16,7 +16,7 @@ import (
 )
 
 func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error) {
-	panic(fmt.Errorf("not implemented"))
+	return r.UpdateProductResolver(id, product)
 }
 
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
