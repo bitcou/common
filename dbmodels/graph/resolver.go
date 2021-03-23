@@ -115,11 +115,10 @@ func (r *queryResolver) ClientInfoResolver(username string, password string) (*m
 	var client *model.Client
 	query := r.Resolver.DB
 
-	query = query.Where("user_name = ? and password = ?", username, password).Limit(1)
+	query = query.Where("user_name = ? and password = ?", username, password).Limit(1).Find(&client)
 
-	err := query.Find(&client).Error
-	if err != nil {
-		log.Fatal(err)
+	if query.Error != nil {
+		return client, query.Error
 	}
 	return client, nil
 }
