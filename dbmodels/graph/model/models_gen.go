@@ -204,6 +204,8 @@ type ProductAdmin struct {
 	DiscountAbsolute float64 `json:"discountAbsolute"`
 	//  Product discount percentage, expressed as a decimal from 0 to 1 ***
 	DiscountPercentage float64 `json:"discountPercentage"`
+	//  Custom Product Discount
+	CustomDiscount float64 `json:"customDiscount"`
 	//  Fixed maximum price of the product in eur
 	EurMaxPrice float64 `json:"eurMaxPrice"`
 	//  Fixed minium price of the product in eur
@@ -218,8 +220,6 @@ type ProductAdmin struct {
 	CustomFullName string `json:"customFullName"`
 	//  Indicates if the product has a discount
 	HasDiscount bool `json:"hasDiscount"`
-	//  Indicates if the product has a discount
-	CustomDiscount float64 `json:"customDiscount"`
 	//  Indicates if the product has a fixed price
 	IsFixedPrice bool `json:"isFixedPrice"`
 	//  Indicates if the product is premium
@@ -254,6 +254,8 @@ type ProductAdmin struct {
 	Tc string `json:"tc"`
 	//  URL Image of the product
 	URLImage string `json:"urlImage"`
+	//  Custom URL Image of the product
+	CustomURLImage string `json:"customUrlImage"`
 	//  Array containing the countries where the product can be found
 	Countries []*Country `json:"countries" gorm:"many2many:product_countries;"`
 	//  ***
@@ -275,6 +277,17 @@ type ProductFilter struct {
 	FullName *string `json:"fullName"`
 	//  Product premium flag
 	IsPremium *bool `json:"isPremium"`
+}
+
+type ProductInput struct {
+	//  Product custom name
+	CustomFullName string `json:"customFullName"`
+	//  Indicates if the product has a discount
+	CustomDiscount float64 `json:"customDiscount"`
+	//  Custom URL Image of the product
+	CustomURLImage string `json:"customUrlImage"`
+	//  Product custom description
+	CustomDescription string `json:"customDescription"`
 }
 
 type Provider struct {

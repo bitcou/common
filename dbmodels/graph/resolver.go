@@ -19,6 +19,38 @@ type Resolver struct {
 	DB *gorm.DB
 }
 
+func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductInput) (*model.ProductAdmin, error) {
+	var p *model.ProductAdmin
+	query := r.Resolver.DB
+
+	query = query.First(&p, id)
+	var mapChanges = make(map[string]interface{})
+
+	if product.CustomDescription != "" {
+		mapChanges["custom_description"] = product.CustomDescription
+	}
+	if product.CustomFullName != "" {
+		mapChanges["custom_full_name"] = product.CustomFullName
+	}
+
+	if product.CustomURLImage != "" {
+		mapChanges["custom_url_image"] = product.CustomURLImage
+	}
+
+	if product.CustomDiscount != 0 {
+		mapChanges["custom_discount"] = product.CustomDiscount
+	}
+
+	update := r.Resolver.DB
+
+	update = update.Model(&p).Updates(mapChanges)
+
+	if update.Error != nil {
+		return p, update.Error
+	}
+	return p, nil
+}
+
 func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *int, offset *int) ([]*model.Purchase, error) {
 	var purchases []*model.Purchase
 	query := r.Resolver.DB

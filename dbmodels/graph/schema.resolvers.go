@@ -15,6 +15,10 @@ import (
 	commonErrors "github.com/bitcou/common/errors"
 )
 
+func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
 	// TODO if isAdmin return all clients
 	clientInfo := auth.ForContext(ctx)
@@ -104,7 +108,11 @@ func (r *queryResolver) AccountInfo(ctx context.Context, username string, passwo
 	return r.ClientInfoResolver(username, password)
 }
 
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
