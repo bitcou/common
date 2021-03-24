@@ -110,7 +110,7 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 		query = query.Offset(*offset)
 	}
 
-	err := query.Order("id").Preload("Client").Preload("Product").Find(&purchases).Error
+	err := query.Order("id").Preload("MetaProvider").Preload("Product").Preload("Client").Find(&purchases).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -145,7 +145,7 @@ func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, 
 		query = query.Offset(*offset)
 	}
 
-	err := query.Order("id").Find(&clients).Error
+	err := query.Order("id").Preload("MetaProvider").Find(&clients).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -251,8 +251,6 @@ func (r *queryResolver) ProductsByPhoneNumberResolver(phoneNumber model.PhoneNum
 		log.Fatal(err)
 	}
 
-	fmt.Printf("The dialing code of %s is: %v\n", phoneNumber.CountryCode, countryISO)
-	fmt.Printf("The full phone number is: %s\n", fullPhoneNumber)
 	query = query.Where("locale = ?", countryISO)
 	if *limit > 0 {
 		query = query.Limit(*limit)
