@@ -32,6 +32,11 @@ type Query {
     accountInfo(username: String!, password: String!): Client!
 }
 
+type Mutation {
+    """ Updates custom product information"""
+    updateProduct(id: ID!, product: ProductInput!): ProductAdmin!
+}
+
 type Category {
 
     """ Category ID """
@@ -298,6 +303,20 @@ type Product {
     categories: [Category!]
 }
 
+input ProductInput {
+    """ Product custom name """
+    customFullName: String!
+
+    """ Indicates if the product has a discount """
+    customDiscount: Float!
+
+    """ Custom URL Image of the product """
+    customUrlImage: String!
+
+    """ Product custom description """
+    customDescription: String!
+}
+
 type ProductAdmin {
 
     """ Product ID """
@@ -321,6 +340,9 @@ type ProductAdmin {
     """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
     discountPercentage: Float!
 
+    """ Custom Product Discount """
+    customDiscount: Float!
+
     """ Fixed maximum price of the product in eur """
     eurMaxPrice: Float!
 
@@ -341,9 +363,6 @@ type ProductAdmin {
 
     """ Indicates if the product has a discount """
     hasDiscount: Boolean!
-
-    """ Indicates if the product has a discount """
-    customDiscount: Float!
 
     """ Indicates if the product has a fixed price """
     isFixedPrice: Boolean!
@@ -395,6 +414,9 @@ type ProductAdmin {
 
     """ URL Image of the product """
     urlImage: String!
+
+    """ Custom URL Image of the product """
+    customUrlImage: String!
 
     """ Array containing the countries where the product can be found """
     countries: [Country!]!

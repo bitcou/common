@@ -15,6 +15,15 @@ import (
 	commonErrors "github.com/bitcou/common/errors"
 )
 
+func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error) {
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		log.Println("no client found")
+		return nil, errors.New("no client info")
+	}
+	return r.UpdateProductResolver(id, product)
+}
+
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
 	// TODO if isAdmin return all clients
 	clientInfo := auth.ForContext(ctx)
@@ -23,7 +32,6 @@ func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter,
 		return nil, errors.New("no client info")
 	}
 	// TODO if is admin return all client info.
-	log.Println("clientInfo", clientInfo)
 	if filter == nil {
 		filter = &model.ClientFilter{
 			ID: &clientInfo.ID,
@@ -104,7 +112,11 @@ func (r *queryResolver) AccountInfo(ctx context.Context, username string, passwo
 	return r.ClientInfoResolver(username, password)
 }
 
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

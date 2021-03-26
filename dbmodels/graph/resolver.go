@@ -19,6 +19,47 @@ type Resolver struct {
 	DB *gorm.DB
 }
 
+func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductInput) (*model.ProductAdmin, error) {
+	var products []*model.ProductAdmin
+	var p *model.ProductAdmin
+	query := r.Resolver.DB
+
+	query = query.Where("id = ?", id).Find(&products)
+
+	if query.Error != nil {
+		log.Println("error retrieving")
+		return p, query.Error
+	}
+
+	p = products[0]
+	var mapChanges = make(map[string]interface{})
+
+	if product.CustomDescription != "" {
+		mapChanges["custom_description"] = product.CustomDescription
+	}
+	if product.CustomFullName != "" {
+		mapChanges["custom_full_name"] = product.CustomFullName
+	}
+
+	if product.CustomURLImage != "" {
+		mapChanges["custom_url_image"] = product.CustomURLImage
+	}
+
+	if product.CustomDiscount != 0 {
+		mapChanges["custom_discount"] = product.CustomDiscount
+	}
+
+	update := r.Resolver.DB
+
+	update = update.Model(&p).Updates(mapChanges)
+
+	if update.Error != nil {
+		log.Println("error updating product ", product)
+		return p, update.Error
+	}
+	return p, nil
+}
+
 func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *int, offset *int) ([]*model.Purchase, error) {
 	var purchases []*model.Purchase
 	query := r.Resolver.DB
@@ -69,7 +110,7 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 		query = query.Offset(*offset)
 	}
 
-	err := query.Order("id").Preload("Client").Preload("Product").Find(&purchases).Error
+	err := query.Order("id").Preload("MetaProvider").Preload("Product").Preload("Client").Find(&purchases).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,7 +145,7 @@ func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, 
 		query = query.Offset(*offset)
 	}
 
-	err := query.Order("id").Find(&clients).Error
+	err := query.Order("id").Preload("MetaProvider").Find(&clients).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -209,8 +250,6 @@ func (r *queryResolver) ProductsByPhoneNumberResolver(phoneNumber model.PhoneNum
 		log.Fatal(err)
 	}
 
-	fmt.Printf("The dialing code of %s is: %v\n", phoneNumber.CountryCode, countryISO)
-	fmt.Printf("The full phone number is: %s\n", fullPhoneNumber)
 	query = query.Where("locale = ?", countryISO)
 	if *limit > 0 {
 		query = query.Limit(*limit)

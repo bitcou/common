@@ -35,6 +35,7 @@ type Config struct {
 }
 
 type ResolverRoot interface {
+	Mutation() MutationResolver
 	Query() QueryResolver
 }
 
@@ -95,6 +96,10 @@ type ComplexityRoot struct {
 		Name func(childComplexity int) int
 	}
 
+	Mutation struct {
+		UpdateProduct func(childComplexity int, id int, product model.ProductInput) int
+	}
+
 	Product struct {
 		Available            func(childComplexity int) int
 		Categories           func(childComplexity int) int
@@ -138,6 +143,7 @@ type ComplexityRoot struct {
 		CustomDescription    func(childComplexity int) int
 		CustomDiscount       func(childComplexity int) int
 		CustomFullName       func(childComplexity int) int
+		CustomURLImage       func(childComplexity int) int
 		Description          func(childComplexity int) int
 		DiscountAbsolute     func(childComplexity int) int
 		DiscountPercentage   func(childComplexity int) int
@@ -221,6 +227,9 @@ type ComplexityRoot struct {
 	}
 }
 
+type MutationResolver interface {
+	UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error)
+}
 type QueryResolver interface {
 	Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error)
 	Categories(ctx context.Context, limit *int, offset *int) ([]*model.Category, error)
@@ -492,6 +501,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MetaProvider.Name(childComplexity), true
+
+	case "Mutation.updateProduct":
+		if e.complexity.Mutation.UpdateProduct == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProduct_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProduct(childComplexity, args["id"].(int), args["product"].(model.ProductInput)), true
 
 	case "Product.available":
 		if e.complexity.Product.Available == nil {
@@ -765,6 +786,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ProductAdmin.CustomFullName(childComplexity), true
+
+	case "ProductAdmin.customUrlImage":
+		if e.complexity.ProductAdmin.CustomURLImage == nil {
+			break
+		}
+
+		return e.complexity.ProductAdmin.CustomURLImage(childComplexity), true
 
 	case "ProductAdmin.description":
 		if e.complexity.ProductAdmin.Description == nil {
@@ -1311,6 +1339,20 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 				Data: buf.Bytes(),
 			}
 		}
+	case ast.Mutation:
+		return func(ctx context.Context) *graphql.Response {
+			if !first {
+				return nil
+			}
+			first = false
+			data := ec._Mutation(ctx, rc.Operation.SelectionSet)
+			var buf bytes.Buffer
+			data.MarshalGQL(&buf)
+
+			return &graphql.Response{
+				Data: buf.Bytes(),
+			}
+		}
 
 	default:
 		return graphql.OneShot(graphql.ErrorResponse(ctx, "unsupported GraphQL operation"))
@@ -1369,6 +1411,11 @@ type Query {
 
     """ Retrieve the log in information for a user """
     accountInfo(username: String!, password: String!): Client!
+}
+
+type Mutation {
+    """ Updates custom product information"""
+    updateProduct(id: ID!, product: ProductInput!): ProductAdmin!
 }
 
 type Category {
@@ -1637,6 +1684,20 @@ type Product {
     categories: [Category!]
 }
 
+input ProductInput {
+    """ Product custom name """
+    customFullName: String!
+
+    """ Indicates if the product has a discount """
+    customDiscount: Float!
+
+    """ Custom URL Image of the product """
+    customUrlImage: String!
+
+    """ Product custom description """
+    customDescription: String!
+}
+
 type ProductAdmin {
 
     """ Product ID """
@@ -1660,6 +1721,9 @@ type ProductAdmin {
     """ Product discount percentage, expressed as a decimal from 0 to 1 *** """
     discountPercentage: Float!
 
+    """ Custom Product Discount """
+    customDiscount: Float!
+
     """ Fixed maximum price of the product in eur """
     eurMaxPrice: Float!
 
@@ -1680,9 +1744,6 @@ type ProductAdmin {
 
     """ Indicates if the product has a discount """
     hasDiscount: Boolean!
-
-    """ Indicates if the product has a discount """
-    customDiscount: Float!
 
     """ Indicates if the product has a fixed price """
     isFixedPrice: Boolean!
@@ -1734,6 +1795,9 @@ type ProductAdmin {
 
     """ URL Image of the product """
     urlImage: String!
+
+    """ Custom URL Image of the product """
+    customUrlImage: String!
 
     """ Array containing the countries where the product can be found """
     countries: [Country!]!
@@ -1894,6 +1958,30 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_updateProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 model.ProductInput
+	if tmp, ok := rawArgs["product"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("product"))
+		arg1, err = ec.unmarshalNProductInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["product"] = arg1
+	return args, nil
+}
 
 func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -3434,6 +3522,48 @@ func (ec *executionContext) _MetaProvider_name(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProduct_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProduct(rctx, args["id"].(int), args["product"].(model.ProductInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.ProductAdmin)
+	fc.Result = res
+	return ec.marshalNProductAdmin2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdmin(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4793,6 +4923,41 @@ func (ec *executionContext) _ProductAdmin_discountPercentage(ctx context.Context
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ProductAdmin_customDiscount(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomDiscount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(float64)
+	fc.Result = res
+	return ec.marshalNFloat2float64(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _ProductAdmin_eurMaxPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5036,41 +5201,6 @@ func (ec *executionContext) _ProductAdmin_hasDiscount(ctx context.Context, field
 	res := resTmp.(bool)
 	fc.Result = res
 	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _ProductAdmin_customDiscount(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "ProductAdmin",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   false,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CustomDiscount, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(float64)
-	fc.Result = res
-	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ProductAdmin_isFixedPrice(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
@@ -5652,6 +5782,41 @@ func (ec *executionContext) _ProductAdmin_urlImage(ctx context.Context, field gr
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.URLImage, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProductAdmin_customUrlImage(ctx context.Context, field graphql.CollectedField, obj *model.ProductAdmin) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProductAdmin",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CustomURLImage, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -8573,6 +8738,50 @@ func (ec *executionContext) unmarshalInputProductFilter(ctx context.Context, obj
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputProductInput(ctx context.Context, obj interface{}) (model.ProductInput, error) {
+	var it model.ProductInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "customFullName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customFullName"))
+			it.CustomFullName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customDiscount":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customDiscount"))
+			it.CustomDiscount, err = ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customUrlImage":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customUrlImage"))
+			it.CustomURLImage, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customDescription":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customDescription"))
+			it.CustomDescription, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputProviderFilter(ctx context.Context, obj interface{}) (model.ProviderFilter, error) {
 	var it model.ProviderFilter
 	var asMap = obj.(map[string]interface{})
@@ -8951,6 +9160,37 @@ func (ec *executionContext) _MetaProvider(ctx context.Context, sel ast.Selection
 	return out
 }
 
+var mutationImplementors = []string{"Mutation"}
+
+func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, mutationImplementors)
+
+	ctx = graphql.WithFieldContext(ctx, &graphql.FieldContext{
+		Object: "Mutation",
+	})
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Mutation")
+		case "updateProduct":
+			out.Values[i] = ec._Mutation_updateProduct(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var productImplementors = []string{"Product"}
 
 func (ec *executionContext) _Product(ctx context.Context, sel ast.SelectionSet, obj *model.Product) graphql.Marshaler {
@@ -9173,6 +9413,11 @@ func (ec *executionContext) _ProductAdmin(ctx context.Context, sel ast.Selection
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "customDiscount":
+			out.Values[i] = ec._ProductAdmin_customDiscount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "eurMaxPrice":
 			out.Values[i] = ec._ProductAdmin_eurMaxPrice(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -9205,11 +9450,6 @@ func (ec *executionContext) _ProductAdmin(ctx context.Context, sel ast.Selection
 			}
 		case "hasDiscount":
 			out.Values[i] = ec._ProductAdmin_hasDiscount(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "customDiscount":
-			out.Values[i] = ec._ProductAdmin_customDiscount(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -9295,6 +9535,11 @@ func (ec *executionContext) _ProductAdmin(ctx context.Context, sel ast.Selection
 			}
 		case "urlImage":
 			out.Values[i] = ec._ProductAdmin_urlImage(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "customUrlImage":
+			out.Values[i] = ec._ProductAdmin_customUrlImage(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -10251,6 +10496,10 @@ func (ec *executionContext) marshalNProduct2ᚖgithubᚗcomᚋbitcouᚋcommonᚋ
 	return ec._Product(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNProductAdmin2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdmin(ctx context.Context, sel ast.SelectionSet, v model.ProductAdmin) graphql.Marshaler {
+	return ec._ProductAdmin(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNProductAdmin2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdminᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ProductAdmin) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -10296,6 +10545,11 @@ func (ec *executionContext) marshalNProductAdmin2ᚖgithubᚗcomᚋbitcouᚋcomm
 		return graphql.Null
 	}
 	return ec._ProductAdmin(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNProductInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductInput(ctx context.Context, v interface{}) (model.ProductInput, error) {
+	res, err := ec.unmarshalInputProductInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProvider(ctx context.Context, sel ast.SelectionSet, v *model.Provider) graphql.Marshaler {
