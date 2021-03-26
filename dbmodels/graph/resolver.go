@@ -77,7 +77,7 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 		}
 		if filter.DateRange != nil {
 			if filter.DateRange.Start > filter.DateRange.End || filter.DateRange.End < filter.DateRange.Start {
-				panic("Check the start and end values for the date range.")
+				return purchases, errors.New("Check the start and end values for the date range.")
 			} else {
 				query = query.Where("timestamp BETWEEN ? AND ?", filter.DateRange.Start, filter.DateRange.End)
 			}
@@ -88,7 +88,8 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 			row := query.Table("purchases").Select("max(total_euro)").Row()
 			err := row.Scan(&maxPrice)
 			if err != nil {
-				log.Fatal(err)
+				log.Println(err)
+				return purchases, err
 			}
 
 			if filter.PriceRange.MinPrice != nil && *filter.PriceRange.MinPrice > 0 {
@@ -98,7 +99,7 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 				maxPrice = *filter.PriceRange.MaxPrice
 			}
 			if minPrice > maxPrice || maxPrice < minPrice {
-				panic("Check the minimum and maximum values for the price range.")
+				return purchases, errors.New("Check the minimum and maximum values for the price range.")
 			} else {
 				query = query.Where("total_euro BETWEEN ? AND ?", minPrice, maxPrice)
 			}
@@ -113,7 +114,7 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 
 	err := query.Order("id").Preload("MetaProvider").Preload("Product").Preload("Client").Find(&purchases).Error
 	if err != nil {
-		log.Fatal(err)
+		return purchases, err
 	}
 	return purchases, nil
 }
@@ -148,7 +149,7 @@ func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, 
 
 	err := query.Order("id").Preload("MetaProvider").Find(&clients).Error
 	if err != nil {
-		log.Fatal(err)
+		return clients, err
 	}
 	return clients, nil
 }
@@ -208,7 +209,8 @@ func (r *queryResolver) ProductsResolver(filter *model.ProductFilter, limit *int
 
 	err := query.Order("id").Preload("MetaProvider").Find(&products).Error
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return products, err
 	}
 	return products, nil
 }
@@ -243,7 +245,7 @@ func (r *queryResolver) ProductsAdminResolver(filter *model.ProductFilter, limit
 
 	err := query.Order("id").Preload("MetaProvider").Find(&products).Error
 	if err != nil {
-		log.Fatal(err)
+		return products, err
 	}
 	return products, nil
 }
@@ -254,14 +256,14 @@ func (r *queryResolver) ProductsByPhoneNumberResolver(phoneNumber model.PhoneNum
 
 	reg, err := regexp.Compile("[^0-9]+")
 	if err != nil {
-		log.Fatal(err)
+		return products, err
 	}
 	processedCountryCode := reg.ReplaceAllString(phoneNumber.CountryCode, "")
 	processedPhoneNumber := reg.ReplaceAllString(phoneNumber.PhoneNumber, "")
 	fullPhoneNumber := "+" + processedCountryCode + processedPhoneNumber
 	countryISO, err := phonegeocode.New().Country(fullPhoneNumber)
 	if err != nil {
-		log.Fatal(err)
+		return products, err
 	}
 
 	query = query.Where("locale = ?", countryISO)
@@ -274,7 +276,7 @@ func (r *queryResolver) ProductsByPhoneNumberResolver(phoneNumber model.PhoneNum
 
 	err = query.Order("id").Preload("MetaProvider").Find(&products).Error
 	if err != nil {
-		log.Fatal(err)
+		return products, err
 	}
 	return products, nil
 }
@@ -292,7 +294,7 @@ func (r *queryResolver) CategoriesResolver(limit *int, offset *int) ([]*model.Ca
 
 	err := query.Order("id").Find(&categories).Error
 	if err != nil {
-		log.Fatal(err)
+		return categories, err
 	}
 	return categories, nil
 }
@@ -313,7 +315,7 @@ func (r *queryResolver) ProvidersResolver(filter *model.ProviderFilter, limit *i
 
 	err := query.Order("id").Preload("MetaProvider").Find(&providers).Error
 	if err != nil {
-		log.Fatal(err)
+		return providers, err
 	}
 	return providers, nil
 }
@@ -331,7 +333,7 @@ func (r *queryResolver) CountriesResolver(limit *int, offset *int) ([]*model.Cou
 
 	err := query.Order("id").Find(&countries).Error
 	if err != nil {
-		log.Fatal(err)
+		return countries, err
 	}
 	return countries, nil
 }
