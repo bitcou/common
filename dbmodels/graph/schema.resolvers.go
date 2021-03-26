@@ -108,7 +108,7 @@ func (r *queryResolver) ProductsByPhoneNumber(ctx context.Context, phoneNumber m
 	return r.ProductsByPhoneNumberResolver(phoneNumber, limit, offset)
 }
 
-func (r *queryResolver) AccountInfo(ctx context.Context, username string, password string) (*model.Client, error) {
+func (r *queryResolver) AccountInfo(ctx context.Context, username string, password string) (string, error) {
 	return r.ClientInfoResolver(username, password)
 }
 
