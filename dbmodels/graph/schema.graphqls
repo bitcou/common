@@ -29,7 +29,7 @@ type Query {
     productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]!
 
     """ Retrieve the log in information for a user """
-    accountInfo(username: String!, password: String!): Client!
+    accountInfo(username: String!, password: String!): String!
 }
 
 type Mutation {

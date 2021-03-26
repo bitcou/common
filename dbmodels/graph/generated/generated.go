@@ -239,7 +239,7 @@ type QueryResolver interface {
 	Providers(ctx context.Context, filter *model.ProviderFilter, limit *int, offset *int) ([]*model.Provider, error)
 	Countries(ctx context.Context, limit *int, offset *int) ([]*model.Country, error)
 	ProductsByPhoneNumber(ctx context.Context, phoneNumber model.PhoneNumber, limit *int, offset *int) ([]*model.Product, error)
-	AccountInfo(ctx context.Context, username string, password string) (*model.Client, error)
+	AccountInfo(ctx context.Context, username string, password string) (string, error)
 }
 
 type executableSchema struct {
@@ -1410,7 +1410,7 @@ type Query {
     productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]!
 
     """ Retrieve the log in information for a user """
-    accountInfo(username: String!, password: String!): Client!
+    accountInfo(username: String!, password: String!): String!
 }
 
 type Mutation {
@@ -7212,9 +7212,9 @@ func (ec *executionContext) _Query_accountInfo(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Client)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -10289,10 +10289,6 @@ func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommon�
 		return graphql.Null
 	}
 	return ec._Category(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNClient2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx context.Context, sel ast.SelectionSet, v model.Client) graphql.Marshaler {
-	return ec._Client(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Client) graphql.Marshaler {
