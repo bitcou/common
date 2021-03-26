@@ -112,7 +112,7 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 		query = query.Offset(*offset)
 	}
 
-	err := query.Order("id").Preload("MetaProvider").Preload("Product").Preload("Client").Find(&purchases).Error
+	err := query.Order("id").Preload("Product").Preload("Client").Find(&purchases).Error
 	if err != nil {
 		return purchases, err
 	}
