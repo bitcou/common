@@ -157,26 +157,29 @@ func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, 
 func (r *queryResolver) ClientInfoResolver(username string, password string) (string, error) {
 	// TODO Make this more efficient using GORM
 	var clients []*model.Client
-	var apiKeys []model.APIKey
+	// var apiKeys []model.APIKey
 	query := r.Resolver.DB
-	query2 := r.Resolver.DB
+	// query2 := r.Resolver.DB
 
-	query = query.Where("user_name = ? AND password = ?", username, password).Find(&clients)
+	query = query.Where("user_name = ? AND password = ?", username, password).Preload("APIKeys").Find(&clients)
 	if query.Error != nil {
 		return "", query.Error
 	}
 	if len(clients) < 0 {
 		return "", errors.New("not found")
 	}
-	query2 = query2.Where("client_id = ?", clients[0].ID).Find(&apiKeys)
-	if query2.Error != nil {
-		return "", query.Error
-	}
-	if len(apiKeys) < 0 {
+	if len(clients[0].APIKeys) < 0 {
 		return "", errors.New("not found")
 	}
+	// query2 = query2.Where("client_id = ?", clients[0].ID).Find(&apiKeys)
+	// if query2.Error != nil {
+	// 	return "", query.Error
+	// }
+	// if len(apiKeys) < 0 {
+	// 	return "", errors.New("not found")
+	// }
 
-	return apiKeys[0].Key, nil
+	return clients[0].APIKeys[0].Key, nil
 }
 
 func (r *queryResolver) ProductsResolver(filter *model.ProductFilter, limit *int, offset *int) ([]*model.Product, error) {
