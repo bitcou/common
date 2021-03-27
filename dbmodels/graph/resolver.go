@@ -147,7 +147,7 @@ func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, 
 		query = query.Offset(*offset)
 	}
 
-	err := query.Order("id").Preload("MetaProvider").Find(&clients).Error
+	err := query.Order("id").Find(&clients).Error
 	if err != nil {
 		return clients, err
 	}
