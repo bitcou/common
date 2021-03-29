@@ -41,11 +41,11 @@ func Middleware(db *gorm.DB) func(http.Handler) http.Handler {
 				return
 			}
 
-			keyInfo, err := getUserByAPIKey(c, db)
-			if err != nil {
-				http.Error(w, "Auth Not Set", http.StatusForbidden)
-				return
-			}
+			keyInfo, _ := getUserByAPIKey(c, db)
+			// if err != nil {
+			// 	http.Error(w, "Auth Not Set", http.StatusForbidden)
+			// 	return
+			// }
 
 			/*key := APIKeyInfo{
 				APIKey:    keyInfo.Key,
