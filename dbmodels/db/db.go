@@ -14,7 +14,6 @@ import (
 // GetDbConnection handles the connection to a gorm database, so that DB CONNECTION Environment Variables are also standarized
 func GetDbConnection(dbtype string, logLevel logger.LogLevel, devMode bool) *gorm.DB {
 	_ = godotenv.Load()
-	dbIP := "206.189.220.44"
 	var dbName string
 	if devMode {
 		if os.Getenv("POSTGRES_DATABASE") != "" {
@@ -38,7 +37,7 @@ func GetDbConnection(dbtype string, logLevel logger.LogLevel, devMode bool) *gor
 	}
 	if dbtype == "postgres" {
 		var err error
-		credentials := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable", dbIP, os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), dbName)
+		credentials := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable", os.Getenv("POSTGRES_IP"), os.Getenv("POSTGRES_USER"), os.Getenv("POSTGRES_PASSWORD"), dbName)
 		db, err := gorm.Open(postgres.Open(credentials), &gorm.Config{
 			Logger: logger.Default.LogMode(logLevel),
 		})
