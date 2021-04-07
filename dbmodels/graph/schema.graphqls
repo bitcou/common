@@ -40,7 +40,7 @@ type Mutation {
     updateProduct(id: ID!, product: ProductInput!): ProductAdmin!
 
     """ Updates custom product information. Requires admin privileges."""
-    updateClient(id: ID!, product: ClientInput!): Client!
+    updateClient(id: ID, client: ClientInput!): Client!
 }
 
 type Category {

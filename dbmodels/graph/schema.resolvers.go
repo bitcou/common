@@ -28,7 +28,7 @@ func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product mo
 	return r.UpdateProductResolver(id, product)
 }
 
-func (r *mutationResolver) UpdateClient(ctx context.Context, id int, product model.ClientInput) (*model.Client, error) {
+func (r *mutationResolver) UpdateClient(ctx context.Context, id *int, client model.ClientInput) (*model.Client, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
@@ -36,7 +36,6 @@ func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter,
 	// TODO if isAdmin return all clients
 	clientInfo := auth.ForContext(ctx)
 	if clientInfo == nil {
-		log.Println("no client found")
 		return nil, errors.New("no client info")
 	}
 	// TODO if is admin return all client info.

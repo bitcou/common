@@ -98,7 +98,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreatePurchase func(childComplexity int, purchase model.PurchaseInput) int
-		UpdateClient   func(childComplexity int, id int, product model.ClientInput) int
+		UpdateClient   func(childComplexity int, id *int, client model.ClientInput) int
 		UpdateProduct  func(childComplexity int, id int, product model.ProductInput) int
 	}
 
@@ -232,7 +232,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreatePurchase(ctx context.Context, purchase model.PurchaseInput) (*model.Purchase, error)
 	UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error)
-	UpdateClient(ctx context.Context, id int, product model.ClientInput) (*model.Client, error)
+	UpdateClient(ctx context.Context, id *int, client model.ClientInput) (*model.Client, error)
 }
 type QueryResolver interface {
 	Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error)
@@ -528,7 +528,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateClient(childComplexity, args["id"].(int), args["product"].(model.ClientInput)), true
+		return e.complexity.Mutation.UpdateClient(childComplexity, args["id"].(*int), args["client"].(model.ClientInput)), true
 
 	case "Mutation.updateProduct":
 		if e.complexity.Mutation.UpdateProduct == nil {
@@ -1449,7 +1449,7 @@ type Mutation {
     updateProduct(id: ID!, product: ProductInput!): ProductAdmin!
 
     """ Updates custom product information. Requires admin privileges."""
-    updateClient(id: ID!, product: ClientInput!): Client!
+    updateClient(id: ID, client: ClientInput!): Client!
 }
 
 type Category {
@@ -2084,24 +2084,24 @@ func (ec *executionContext) field_Mutation_createPurchase_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_updateClient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 int
+	var arg0 *int
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		arg0, err = ec.unmarshalOID2ᚖint(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
 	args["id"] = arg0
 	var arg1 model.ClientInput
-	if tmp, ok := rawArgs["product"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("product"))
+	if tmp, ok := rawArgs["client"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("client"))
 		arg1, err = ec.unmarshalNClientInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["product"] = arg1
+	args["client"] = arg1
 	return args, nil
 }
 
@@ -3777,7 +3777,7 @@ func (ec *executionContext) _Mutation_updateClient(ctx context.Context, field gr
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateClient(rctx, args["id"].(int), args["product"].(model.ClientInput))
+		return ec.resolvers.Mutation().UpdateClient(rctx, args["id"].(*int), args["client"].(model.ClientInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
