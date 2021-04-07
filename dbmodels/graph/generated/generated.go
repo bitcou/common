@@ -97,7 +97,9 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		UpdateProduct func(childComplexity int, id int, product model.ProductInput) int
+		CreatePurchase func(childComplexity int, purchase model.PurchaseInput) int
+		UpdateClient   func(childComplexity int, id int, product model.ClientInput) int
+		UpdateProduct  func(childComplexity int, id int, product model.ProductInput) int
 	}
 
 	Product struct {
@@ -228,7 +230,9 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
+	CreatePurchase(ctx context.Context, purchase model.PurchaseInput) (*model.Purchase, error)
 	UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error)
+	UpdateClient(ctx context.Context, id int, product model.ClientInput) (*model.Client, error)
 }
 type QueryResolver interface {
 	Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error)
@@ -501,6 +505,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.MetaProvider.Name(childComplexity), true
+
+	case "Mutation.createPurchase":
+		if e.complexity.Mutation.CreatePurchase == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPurchase_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePurchase(childComplexity, args["purchase"].(model.PurchaseInput)), true
+
+	case "Mutation.updateClient":
+		if e.complexity.Mutation.UpdateClient == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateClient_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateClient(childComplexity, args["id"].(int), args["product"].(model.ClientInput)), true
 
 	case "Mutation.updateProduct":
 		if e.complexity.Mutation.UpdateProduct == nil {
@@ -1385,28 +1413,28 @@ var sources = []*ast.Source{
 
 type Query {
 
-    """ *** Retrieve data for all clients """
+    """ *** Retrieve client data. """
     clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]!
 
     """ *** Retrieve data for all categories """
     categories(limit: Int = 0, offset: Int = 0): [Category!]!
 
-    """ *** Retrieve data for all purchases """
+    """ *** Retrieve data for purchases """
     purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]!
 
     """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
     products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!
 
-    """ Retrieve the information for a set of products with admin info, optionally filtering by ID, country or provider's ID """
+    """ Retrieve the information for a set of products with admin info, optionally filtering by ID, country or provider's ID. Requires admin privileges. """
     products_admin(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [ProductAdmin!]!
 
-    """ Retrieve data for all providers """
+    """ Retrieve provider information """
     providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
 
-    """ Retrieve data for all countries """
+    """ Retrieve available country information """
     countries(limit: Int = 0, offset: Int = 0): [Country!]!
 
-    """ Retrieve the information the products that are available for that phone number """
+    """ Retrieve the information the products that are available for a specified phone number """
     productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]!
 
     """ Retrieve the log in information for a user """
@@ -1414,8 +1442,14 @@ type Query {
 }
 
 type Mutation {
-    """ Updates custom product information"""
+    """ Request a Gift Card purchase. """
+    createPurchase(purchase: PurchaseInput!): Purchase!
+
+    """ Updates custom product information. Requires admin privileges."""
     updateProduct(id: ID!, product: ProductInput!): ProductAdmin!
+
+    """ Updates custom product information. Requires admin privileges."""
+    updateClient(id: ID!, product: ClientInput!): Client!
 }
 
 type Category {
@@ -1452,14 +1486,37 @@ type ApiKey {
 
 }
 
-type Client {
+input ClientInput {
 
     """ Client ID """
-    id: ID!
+    id: ID
 
     """ Client name """
     name: String!
 
+    """ CLient location info """
+    address: AddressInput!
+
+    """ Monthly fee """
+    monthlyFee: Float!
+
+    """ Terms and conditions of the client """
+    tc: String!
+
+    """ Company Contact Details """
+    contactDetails: ContactInput!
+
+    """ Client premium status """
+    isPremium: Boolean!
+
+    """ Client admin status """
+    isAdmin: Boolean!
+
+    """ Client login username """
+    userName: String!
+}
+
+input AddressInput {
     """ Client address street """
     addressStreet: String!
 
@@ -1474,14 +1531,10 @@ type Client {
 
     """ Client address country """
     addressCountry: String!
+}
 
-    """ Monthly fee """
-    monthlyFee: Float!
-
-    """ Terms and conditions of the client """
-    tc: String!
-
-    """ Client contact name """
+input ContactInput {
+""" Client contact name """
     contactName: String!
 
     """ Client contact last name """
@@ -1492,24 +1545,6 @@ type Client {
 
     """ Client contact email """
     contactEmail: String!
-
-    """ Client purchases """
-    purchases: [Purchase!]
-
-    """ Client premium status """
-    isPremium: Boolean!
-
-    """ Client login username """
-    userName: String!
-
-    """ Client login hashed password """
-    password: String!
-
-    """ Float Account Balance """
-    balance: Float!
-
-    """ ApiKeys """
-    apiKeys: [ApiKey!]!
 }
 
 input ClientFilter {
@@ -1528,6 +1563,47 @@ input ClientFilter {
 
     """ Client address country """
     addressCountry: String
+}
+
+type Client {
+    """ Client ID """
+    id: ID!
+    """ Client name """
+    name: String!
+    """ Client address street """
+    addressStreet: String!
+    """ Client address postal code """
+    addressPC: Int!
+    """ Client address city """
+    addressCity: String!
+    """ Client address state """
+    addressState: String!
+    """ Client address country """
+    addressCountry: String!
+    """ Monthly fee """
+    monthlyFee: Float!
+    """ Terms and conditions of the client """
+    tc: String!
+    """ Client contact name """
+    contactName: String!
+    """ Client contact last name """
+    contactLastName: String!
+    """ Client contact title """
+    contactTitle: String!
+    """ Client contact email """
+    contactEmail: String!
+    """ Client purchases """
+    purchases: [Purchase!]
+    """ Client premium status """
+    isPremium: Boolean!
+    """ Client login username """
+    userName: String!
+    """ Client login hashed password """
+    password: String!
+    """ Float Account Balance """
+    balance: Float!
+    """ ApiKeys """
+    apiKeys: [ApiKey!]!
 }
 
 type Country {
@@ -1696,6 +1772,37 @@ input ProductInput {
 
     """ Product custom description """
     customDescription: String!
+}
+
+input PurchaseInput {
+    """ Internal transaction ID of your organization. """
+    transactionID: String!
+    """ End User information, meant for product delivery and analytics """
+    userInfo: UserInfoInput!
+    """ Product Identifier """
+    productID: Int!
+    """ Total Value of the Purchase """
+    totalValue: Float!
+    """ Currency used in the purchase """
+    currency: String!
+
+}
+
+
+input UserInfoInput {
+    """ End User contact email. Only to be used for support purposes. """
+    email: String!
+    """ End User contact name. Only to be used for support purposes. """
+    name: String!
+    """ End User country in ISO 3166 Alpha-2 code (MX, US, DE, etc...). """
+    country: String!
+    """ End User country phone code in ISO 3166 Alpha-2 code (+52, +1, +49, etc...). """
+    phoneCountryCode: String!
+    """ End User country phone number without ISO code. Required when purchasing a mobile product. """
+    phoneNumber: String
+    """ End User utility service account number. """
+    serviceNumber: String
+
 }
 
 type ProductAdmin {
@@ -1958,6 +2065,45 @@ var parsedSchema = gqlparser.MustLoadSchema(sources...)
 // endregion ************************** generated!.gotpl **************************
 
 // region    ***************************** args.gotpl *****************************
+
+func (ec *executionContext) field_Mutation_createPurchase_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.PurchaseInput
+	if tmp, ok := rawArgs["purchase"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("purchase"))
+		arg0, err = ec.unmarshalNPurchaseInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["purchase"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateClient_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 int
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2int(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 model.ClientInput
+	if tmp, ok := rawArgs["product"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("product"))
+		arg1, err = ec.unmarshalNClientInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["product"] = arg1
+	return args, nil
+}
 
 func (ec *executionContext) field_Mutation_updateProduct_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
@@ -3522,6 +3668,48 @@ func (ec *executionContext) _MetaProvider_name(ctx context.Context, field graphq
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_createPurchase(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createPurchase_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreatePurchase(rctx, args["purchase"].(model.PurchaseInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Purchase)
+	fc.Result = res
+	return ec.marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchase(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3562,6 +3750,48 @@ func (ec *executionContext) _Mutation_updateProduct(ctx context.Context, field g
 	res := resTmp.(*model.ProductAdmin)
 	fc.Result = res
 	return ec.marshalNProductAdmin2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐProductAdmin(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateClient(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateClient_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateClient(rctx, args["id"].(int), args["product"].(model.ClientInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Client)
+	fc.Result = res
+	return ec.marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Product_id(ctx context.Context, field graphql.CollectedField, obj *model.Product) (ret graphql.Marshaler) {
@@ -8550,6 +8780,58 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAddressInput(ctx context.Context, obj interface{}) (model.AddressInput, error) {
+	var it model.AddressInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "addressStreet":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressStreet"))
+			it.AddressStreet, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addressPC":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressPC"))
+			it.AddressPc, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addressCity":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressCity"))
+			it.AddressCity, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addressState":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressState"))
+			it.AddressState, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "addressCountry":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressCountry"))
+			it.AddressCountry, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputClientFilter(ctx context.Context, obj interface{}) (model.ClientFilter, error) {
 	var it model.ClientFilter
 	var asMap = obj.(map[string]interface{})
@@ -8593,6 +8875,134 @@ func (ec *executionContext) unmarshalInputClientFilter(ctx context.Context, obj 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("addressCountry"))
 			it.AddressCountry, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputClientInput(ctx context.Context, obj interface{}) (model.ClientInput, error) {
+	var it model.ClientInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "address":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("address"))
+			it.Address, err = ec.unmarshalNAddressInput2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAddressInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "monthlyFee":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("monthlyFee"))
+			it.MonthlyFee, err = ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "tc":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tc"))
+			it.Tc, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "contactDetails":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactDetails"))
+			it.ContactDetails, err = ec.unmarshalNContactInput2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐContactInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isPremium":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isPremium"))
+			it.IsPremium, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isAdmin":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isAdmin"))
+			it.IsAdmin, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userName"))
+			it.UserName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputContactInput(ctx context.Context, obj interface{}) (model.ContactInput, error) {
+	var it model.ContactInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "contactName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactName"))
+			it.ContactName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "contactLastName":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactLastName"))
+			it.ContactLastName, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "contactTitle":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactTitle"))
+			it.ContactTitle, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "contactEmail":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contactEmail"))
+			it.ContactEmail, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8845,6 +9255,118 @@ func (ec *executionContext) unmarshalInputPurchaseFilter(ctx context.Context, ob
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("priceRange"))
 			it.PriceRange, err = ec.unmarshalOPriceRange2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPriceRange(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputPurchaseInput(ctx context.Context, obj interface{}) (model.PurchaseInput, error) {
+	var it model.PurchaseInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "transactionID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("transactionID"))
+			it.TransactionID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "userInfo":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userInfo"))
+			it.UserInfo, err = ec.unmarshalNUserInfoInput2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐUserInfoInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "productID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("productID"))
+			it.ProductID, err = ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "totalValue":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("totalValue"))
+			it.TotalValue, err = ec.unmarshalNFloat2float64(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "currency":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("currency"))
+			it.Currency, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUserInfoInput(ctx context.Context, obj interface{}) (model.UserInfoInput, error) {
+	var it model.UserInfoInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "country":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("country"))
+			it.Country, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phoneCountryCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneCountryCode"))
+			it.PhoneCountryCode, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "phoneNumber":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("phoneNumber"))
+			it.PhoneNumber, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "serviceNumber":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("serviceNumber"))
+			it.ServiceNumber, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9175,8 +9697,18 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createPurchase":
+			out.Values[i] = ec._Mutation_createPurchase(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "updateProduct":
 			out.Values[i] = ec._Mutation_updateProduct(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateClient":
+			out.Values[i] = ec._Mutation_updateClient(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -10182,6 +10714,11 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNAddressInput2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAddressInput(ctx context.Context, v interface{}) (*model.AddressInput, error) {
+	res, err := ec.unmarshalInputAddressInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNApiKey2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐAPIKeyᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.APIKey) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -10291,6 +10828,10 @@ func (ec *executionContext) marshalNCategory2ᚖgithubᚗcomᚋbitcouᚋcommon�
 	return ec._Category(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNClient2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClient(ctx context.Context, sel ast.SelectionSet, v model.Client) graphql.Marshaler {
+	return ec._Client(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNClient2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Client) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -10336,6 +10877,16 @@ func (ec *executionContext) marshalNClient2ᚖgithubᚗcomᚋbitcouᚋcommonᚋd
 		return graphql.Null
 	}
 	return ec._Client(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNClientInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐClientInput(ctx context.Context, v interface{}) (model.ClientInput, error) {
+	res, err := ec.unmarshalInputClientInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNContactInput2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐContactInput(ctx context.Context, v interface{}) (*model.ContactInput, error) {
+	res, err := ec.unmarshalInputContactInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNCountry2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐCountryᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Country) graphql.Marshaler {
@@ -10558,6 +11109,10 @@ func (ec *executionContext) marshalNProvider2ᚖgithubᚗcomᚋbitcouᚋcommon�
 	return ec._Provider(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNPurchase2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchase(ctx context.Context, sel ast.SelectionSet, v model.Purchase) graphql.Marshaler {
+	return ec._Purchase(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNPurchase2ᚕᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Purchase) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -10605,6 +11160,11 @@ func (ec *executionContext) marshalNPurchase2ᚖgithubᚗcomᚋbitcouᚋcommon�
 	return ec._Purchase(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalNPurchaseInput2githubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐPurchaseInput(ctx context.Context, v interface{}) (model.PurchaseInput, error) {
+	res, err := ec.unmarshalInputPurchaseInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -10618,6 +11178,11 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUserInfoInput2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐUserInfoInput(ctx context.Context, v interface{}) (*model.UserInfoInput, error) {
+	res, err := ec.unmarshalInputUserInfoInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNVariant2ᚖgithubᚗcomᚋbitcouᚋcommonᚋdbmodelsᚋgraphᚋmodelᚐVariant(ctx context.Context, sel ast.SelectionSet, v *model.Variant) graphql.Marshaler {

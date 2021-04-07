@@ -15,6 +15,10 @@ import (
 	commonErrors "github.com/bitcou/common/errors"
 )
 
+func (r *mutationResolver) CreatePurchase(ctx context.Context, purchase model.PurchaseInput) (*model.Purchase, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error) {
 	clientInfo := auth.ForContext(ctx)
 	if clientInfo == nil {
@@ -22,6 +26,10 @@ func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product mo
 		return nil, errors.New("no client info")
 	}
 	return r.UpdateProductResolver(id, product)
+}
+
+func (r *mutationResolver) UpdateClient(ctx context.Context, id int, product model.ClientInput) (*model.Client, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
