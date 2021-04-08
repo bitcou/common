@@ -22,7 +22,6 @@ func (r *mutationResolver) CreatePurchase(ctx context.Context, purchase model.Pu
 func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product model.ProductInput) (*model.ProductAdmin, error) {
 	clientInfo := auth.ForContext(ctx)
 	if clientInfo == nil {
-		log.Println("no client found")
 		return nil, commonErrors.ErrorNoAuth
 	}
 	if !clientInfo.IsAdmin {
@@ -32,7 +31,14 @@ func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product mo
 }
 
 func (r *mutationResolver) UpdateClient(ctx context.Context, id *int, client model.ClientInput) (*model.Client, error) {
-	panic(fmt.Errorf("not implemented"))
+	clientInfo := auth.ForContext(ctx)
+	if clientInfo == nil {
+		return nil, commonErrors.ErrorNoAuth
+	}
+	if !clientInfo.IsAdmin {
+		return nil, commonErrors.ErrorAdminOnly
+	}
+	return r.UpdateClientResolver(id, client)
 }
 
 func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {

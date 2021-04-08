@@ -42,6 +42,8 @@ type Category struct {
 type Client struct {
 	//  Client ID
 	ID int `json:"id"`
+	//  Business Tax ID Number
+	BusinessTaxID string `json:"businessTaxID"`
 	//  Client name
 	Name string `json:"name"`
 	//  Client address street
@@ -98,6 +100,8 @@ type ClientFilter struct {
 type ClientInput struct {
 	//  Client ID
 	ID *int `json:"id"`
+	//  Business Tax ID Number
+	BusinessTaxID string `json:"businessTaxID"`
 	//  Client name
 	Name string `json:"name"`
 	//  CLient location info

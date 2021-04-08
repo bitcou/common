@@ -78,9 +78,13 @@ type ApiKey {
 }
 
 input ClientInput {
+    # All inputs are required, to handle create vs update developers should hadle data integrity from the frontend.
 
     """ Client ID """
     id: ID
+
+    """ Business Tax ID Number """
+    businessTaxID: String!
 
     """ Client name """
     name: String!
@@ -159,6 +163,8 @@ input ClientFilter {
 type Client {
     """ Client ID """
     id: ID!
+    """ Business Tax ID Number """
+    businessTaxID: String!
     """ Client name """
     name: String!
     """ Client address street """

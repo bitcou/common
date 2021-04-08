@@ -20,6 +20,31 @@ type Resolver struct {
 	DB *gorm.DB
 }
 
+func (r *mutationResolver) UpdateClientResolver(id *int, client model.ClientInput) (*model.Client, error) {
+	var c *model.Client
+	query := r.Resolver.DB
+	clientData := client.ToClientModel(id)
+	if id == nil {
+		// todo create client record and API Keyss
+		result := query.Create(&clientData)
+		if result.Error != nil {
+			return c, result.Error
+		}
+		c = &clientData
+	} else {
+		update := r.Resolver.DB
+
+		update = update.Model(&client).Updates(clientData)
+		if update.Error != nil {
+			log.Println("error updating client info ", clientData)
+			return c, update.Error
+		}
+		c = &clientData
+	}
+
+	return c, nil
+}
+
 func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductInput) (*model.ProductAdmin, error) {
 	var products []*model.ProductAdmin
 	var p *model.ProductAdmin
