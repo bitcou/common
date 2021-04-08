@@ -20,7 +20,7 @@ func (c *ClientInput) ToClientModel(id *int) Client {
 		UserName:        c.UserName,
 	}
 	if id != nil {
-		newClient.ID = *c.ID
+		newClient.ID = *id
 	}
 	return newClient
 }
