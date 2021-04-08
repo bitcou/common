@@ -187,6 +187,8 @@ type Client {
     purchases: [Purchase!]
     """ Client premium status """
     isPremium: Boolean!
+    """ Client admin status """
+    isAdmin: Boolean!
     """ Client login username """
     userName: String!
     """ Client login hashed password """

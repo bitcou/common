@@ -70,6 +70,8 @@ type Client struct {
 	Purchases []*Purchase `json:"purchases"`
 	//  Client premium status
 	IsPremium bool `json:"isPremium"`
+	//  Client admin status
+	IsAdmin bool `json:"isAdmin"`
 	//  Client login username
 	UserName string `json:"userName"`
 	//  Client login hashed password

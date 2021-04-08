@@ -23,7 +23,10 @@ func (r *mutationResolver) UpdateProduct(ctx context.Context, id int, product mo
 	clientInfo := auth.ForContext(ctx)
 	if clientInfo == nil {
 		log.Println("no client found")
-		return nil, errors.New("no client info")
+		return nil, commonErrors.ErrorNoAuth
+	}
+	if !clientInfo.IsAdmin {
+		return nil, commonErrors.ErrorAdminOnly
 	}
 	return r.UpdateProductResolver(id, product)
 }
