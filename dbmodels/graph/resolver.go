@@ -26,14 +26,15 @@ func (r *mutationResolver) UpdateClientResolver(id *int, client model.ClientInpu
 	clientData := client.ToClientModel(id)
 	if id == nil {
 		// todo create client record and API Keyss
+		log.Println("creating user")
 		result := query.Create(&clientData)
 		if result.Error != nil {
 			return c, result.Error
 		}
 		c = &clientData
 	} else {
+		log.Println("updating user")
 		update := r.Resolver.DB
-
 		update = update.Model(&client).Updates(clientData)
 		if update.Error != nil {
 			log.Println("error updating client info ", clientData)
