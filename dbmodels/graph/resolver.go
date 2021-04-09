@@ -21,30 +21,27 @@ type Resolver struct {
 }
 
 func (r *mutationResolver) UpdateClientResolver(id *int, client model.ClientInput) (*model.Client, error) {
-	var c *model.Client
+	var c model.Client
 	query := r.Resolver.DB
 	clientData := client.ToClientModel(id)
 	if id == nil {
-		// todo create client record and API Keyss
-		log.Println("creating user")
+		// todo add API Keyss
 		result := query.Create(&clientData)
 		if result.Error != nil {
-			return c, result.Error
+			return &c, result.Error
 		}
-		c = &clientData
+		c = clientData
 	} else {
-		log.Println("updating user")
-		query.Where("id == ", *id).Find(&c)
+		query.First(&c, *id)
 		c.FromClientModel(client) // Updated Model
 		update := r.Resolver.DB
 		update = update.Model(&c).Updates(c)
 		if update.Error != nil {
 			log.Println("error updating client info ", clientData)
-			return c, update.Error
+			return &c, update.Error
 		}
 	}
-
-	return c, nil
+	return &c, nil
 }
 
 func (r *mutationResolver) UpdateProductResolver(id int, product model.ProductInput) (*model.ProductAdmin, error) {
