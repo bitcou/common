@@ -24,3 +24,22 @@ func (c *ClientInput) ToClientModel(id *int) Client {
 	}
 	return newClient
 }
+func (c *Client) FromClientModel(input ClientInput) {
+
+	c.BusinessTaxID = input.BusinessTaxID
+	c.Name = input.Name
+	c.AddressPc = input.Address.AddressPc
+	c.AddressCity = input.Address.AddressCity
+	c.AddressState = input.Address.AddressState
+	c.AddressCountry = input.Address.AddressCountry
+	c.AddressStreet = input.Address.AddressStreet
+	c.MonthlyFee = input.MonthlyFee
+	c.Tc = input.Tc
+	c.ContactName = input.ContactDetails.ContactName
+	c.ContactLastName = input.ContactDetails.ContactLastName
+	c.ContactTitle = input.ContactDetails.ContactTitle
+	c.ContactEmail = input.ContactDetails.ContactEmail
+	c.IsPremium = input.IsPremium
+	c.IsAdmin = false
+	c.UserName = input.UserName
+}

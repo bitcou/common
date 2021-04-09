@@ -34,13 +34,14 @@ func (r *mutationResolver) UpdateClientResolver(id *int, client model.ClientInpu
 		c = &clientData
 	} else {
 		log.Println("updating user")
+		query.Where("id == ", *id).Find(&c)
+		c.FromClientModel(client) // Updated Model
 		update := r.Resolver.DB
-		update = update.Model(&client).Updates(clientData)
+		update = update.Model(&c).Updates(c)
 		if update.Error != nil {
 			log.Println("error updating client info ", clientData)
 			return c, update.Error
 		}
-		c = &clientData
 	}
 
 	return c, nil
