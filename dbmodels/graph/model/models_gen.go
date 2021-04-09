@@ -2,6 +2,19 @@
 
 package model
 
+type AddressInput struct {
+	//  Client address street
+	AddressStreet string `json:"addressStreet"`
+	//  Client address postal code
+	AddressPc int `json:"addressPC"`
+	//  Client address city
+	AddressCity string `json:"addressCity"`
+	//  Client address state
+	AddressState string `json:"addressState"`
+	//  Client address country
+	AddressCountry string `json:"addressCountry"`
+}
+
 type APIKey struct {
 	//  ApiKey Index
 	ID int `json:"id"`
@@ -29,6 +42,8 @@ type Category struct {
 type Client struct {
 	//  Client ID
 	ID int `json:"id"`
+	//  Business Tax ID Number
+	BusinessTaxID string `json:"businessTaxID"`
 	//  Client name
 	Name string `json:"name"`
 	//  Client address street
@@ -57,6 +72,8 @@ type Client struct {
 	Purchases []*Purchase `json:"purchases"`
 	//  Client premium status
 	IsPremium bool `json:"isPremium"`
+	//  Client admin status
+	IsAdmin bool `json:"isAdmin"`
 	//  Client login username
 	UserName string `json:"userName"`
 	//  Client login hashed password
@@ -78,6 +95,40 @@ type ClientFilter struct {
 	AddressState *string `json:"addressState"`
 	//  Client address country
 	AddressCountry *string `json:"addressCountry"`
+}
+
+type ClientInput struct {
+	//  Client ID
+	ID *int `json:"id"`
+	//  Business Tax ID Number
+	BusinessTaxID string `json:"businessTaxID"`
+	//  Client name
+	Name string `json:"name"`
+	//  CLient location info
+	Address *AddressInput `json:"address"`
+	//  Monthly fee
+	MonthlyFee float64 `json:"monthlyFee"`
+	//  Terms and conditions of the client
+	Tc string `json:"tc"`
+	//  Company Contact Details
+	ContactDetails *ContactInput `json:"contactDetails"`
+	//  Client premium status
+	IsPremium bool `json:"isPremium"`
+	//  Client admin status
+	IsAdmin bool `json:"isAdmin"`
+	//  Client login username
+	UserName string `json:"userName"`
+}
+
+type ContactInput struct {
+	//  Client contact name
+	ContactName string `json:"contactName"`
+	//  Client contact last name
+	ContactLastName string `json:"contactLastName"`
+	//  Client contact title
+	ContactTitle string `json:"contactTitle"`
+	//  Client contact email
+	ContactEmail string `json:"contactEmail"`
 }
 
 type Country struct {
@@ -362,6 +413,34 @@ type PurchaseFilter struct {
 	ProductID *int `json:"productID"`
 	//  *** Price range in euros
 	PriceRange *PriceRange `json:"priceRange"`
+}
+
+type PurchaseInput struct {
+	//  Internal transaction ID of your organization.
+	TransactionID string `json:"transactionID"`
+	//  End User information, meant for product delivery and analytics
+	UserInfo *UserInfoInput `json:"userInfo"`
+	//  Product Identifier
+	ProductID int `json:"productID"`
+	//  Total Value of the Purchase
+	TotalValue float64 `json:"totalValue"`
+	//  Currency used in the purchase
+	Currency string `json:"currency"`
+}
+
+type UserInfoInput struct {
+	//  End User contact email. Only to be used for support purposes.
+	Email string `json:"email"`
+	//  End User contact name. Only to be used for support purposes.
+	Name string `json:"name"`
+	//  End User country in ISO 3166 Alpha-2 code (MX, US, DE, etc...).
+	Country string `json:"country"`
+	//  End User country phone code in ISO 3166 Alpha-2 code (+52, +1, +49, etc...).
+	PhoneCountryCode string `json:"phoneCountryCode"`
+	//  End User country phone number without ISO code. Required when purchasing a mobile product.
+	PhoneNumber *string `json:"phoneNumber"`
+	//  End User utility service account number.
+	ServiceNumber *string `json:"serviceNumber"`
 }
 
 type Variant struct {

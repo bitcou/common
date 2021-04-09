@@ -4,28 +4,28 @@
 
 type Query {
 
-    """ *** Retrieve data for all clients """
+    """ *** Retrieve client data. """
     clients(filter: ClientFilter, limit: Int = 0, offset: Int = 0): [Client!]!
 
     """ *** Retrieve data for all categories """
     categories(limit: Int = 0, offset: Int = 0): [Category!]!
 
-    """ *** Retrieve data for all purchases """
+    """ *** Retrieve data for purchases """
     purchases(filter: PurchaseFilter, limit: Int = 0, offset: Int = 0): [Purchase!]!
 
     """ Retrieve the information for a set of products, optionally filtering by ID, country or provider's ID """
     products(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [Product!]!
 
-    """ Retrieve the information for a set of products with admin info, optionally filtering by ID, country or provider's ID """
+    """ Retrieve the information for a set of products with admin info, optionally filtering by ID, country or provider's ID. Requires admin privileges. """
     products_admin(filter: ProductFilter, limit: Int = 0, offset: Int = 0): [ProductAdmin!]!
 
-    """ Retrieve data for all providers """
+    """ Retrieve provider information """
     providers(filter: ProviderFilter, limit: Int = 0, offset: Int = 0): [Provider!]
 
-    """ Retrieve data for all countries """
+    """ Retrieve available country information """
     countries(limit: Int = 0, offset: Int = 0): [Country!]!
 
-    """ Retrieve the information the products that are available for that phone number """
+    """ Retrieve the information the products that are available for a specified phone number """
     productsByPhoneNumber(phoneNumber: PhoneNumber!, limit: Int = 0, offset: Int = 0): [Product!]!
 
     """ Retrieve the log in information for a user """
@@ -33,8 +33,14 @@ type Query {
 }
 
 type Mutation {
-    """ Updates custom product information"""
+    """ Request a Gift Card purchase. """
+    createPurchase(purchase: PurchaseInput!): Purchase!
+
+    """ Updates custom product information. Requires admin privileges."""
     updateProduct(id: ID!, product: ProductInput!): ProductAdmin!
+
+    """ Updates custom product information. Requires admin privileges."""
+    updateClient(id: ID, client: ClientInput!): Client!
 }
 
 type Category {
@@ -71,14 +77,41 @@ type ApiKey {
 
 }
 
-type Client {
+input ClientInput {
+    # All inputs are required, to handle create vs update developers should hadle data integrity from the frontend.
 
     """ Client ID """
-    id: ID!
+    id: ID
+
+    """ Business Tax ID Number """
+    businessTaxID: String!
 
     """ Client name """
     name: String!
 
+    """ CLient location info """
+    address: AddressInput!
+
+    """ Monthly fee """
+    monthlyFee: Float!
+
+    """ Terms and conditions of the client """
+    tc: String!
+
+    """ Company Contact Details """
+    contactDetails: ContactInput!
+
+    """ Client premium status """
+    isPremium: Boolean!
+
+    """ Client admin status """
+    isAdmin: Boolean!
+
+    """ Client login username """
+    userName: String!
+}
+
+input AddressInput {
     """ Client address street """
     addressStreet: String!
 
@@ -93,14 +126,10 @@ type Client {
 
     """ Client address country """
     addressCountry: String!
+}
 
-    """ Monthly fee """
-    monthlyFee: Float!
-
-    """ Terms and conditions of the client """
-    tc: String!
-
-    """ Client contact name """
+input ContactInput {
+""" Client contact name """
     contactName: String!
 
     """ Client contact last name """
@@ -111,24 +140,6 @@ type Client {
 
     """ Client contact email """
     contactEmail: String!
-
-    """ Client purchases """
-    purchases: [Purchase!]
-
-    """ Client premium status """
-    isPremium: Boolean!
-
-    """ Client login username """
-    userName: String!
-
-    """ Client login hashed password """
-    password: String!
-
-    """ Float Account Balance """
-    balance: Float!
-
-    """ ApiKeys """
-    apiKeys: [ApiKey!]!
 }
 
 input ClientFilter {
@@ -147,6 +158,51 @@ input ClientFilter {
 
     """ Client address country """
     addressCountry: String
+}
+
+type Client {
+    """ Client ID """
+    id: ID!
+    """ Business Tax ID Number """
+    businessTaxID: String!
+    """ Client name """
+    name: String!
+    """ Client address street """
+    addressStreet: String!
+    """ Client address postal code """
+    addressPC: Int!
+    """ Client address city """
+    addressCity: String!
+    """ Client address state """
+    addressState: String!
+    """ Client address country """
+    addressCountry: String!
+    """ Monthly fee """
+    monthlyFee: Float!
+    """ Terms and conditions of the client """
+    tc: String!
+    """ Client contact name """
+    contactName: String!
+    """ Client contact last name """
+    contactLastName: String!
+    """ Client contact title """
+    contactTitle: String!
+    """ Client contact email """
+    contactEmail: String!
+    """ Client purchases """
+    purchases: [Purchase!]
+    """ Client premium status """
+    isPremium: Boolean!
+    """ Client admin status """
+    isAdmin: Boolean!
+    """ Client login username """
+    userName: String!
+    """ Client login hashed password """
+    password: String!
+    """ Float Account Balance """
+    balance: Float!
+    """ ApiKeys """
+    apiKeys: [ApiKey!]!
 }
 
 type Country {
@@ -315,6 +371,37 @@ input ProductInput {
 
     """ Product custom description """
     customDescription: String!
+}
+
+input PurchaseInput {
+    """ Internal transaction ID of your organization. """
+    transactionID: String!
+    """ End User information, meant for product delivery and analytics """
+    userInfo: UserInfoInput!
+    """ Product Identifier """
+    productID: Int!
+    """ Total Value of the Purchase """
+    totalValue: Float!
+    """ Currency used in the purchase """
+    currency: String!
+
+}
+
+
+input UserInfoInput {
+    """ End User contact email. Only to be used for support purposes. """
+    email: String!
+    """ End User contact name. Only to be used for support purposes. """
+    name: String!
+    """ End User country in ISO 3166 Alpha-2 code (MX, US, DE, etc...). """
+    country: String!
+    """ End User country phone code in ISO 3166 Alpha-2 code (+52, +1, +49, etc...). """
+    phoneCountryCode: String!
+    """ End User country phone number without ISO code. Required when purchasing a mobile product. """
+    phoneNumber: String
+    """ End User utility service account number. """
+    serviceNumber: String
+
 }
 
 type ProductAdmin {
