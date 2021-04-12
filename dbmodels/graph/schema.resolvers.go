@@ -55,7 +55,7 @@ func (r *queryResolver) Clients(ctx context.Context, filter *model.ClientFilter,
 	} else {
 		filter.ID = &clientInfo.ID
 	}
-	return r.ClientsResolver(filter, limit, offset)
+	return r.ClientsResolver(filter, limit, offset, clientInfo.IsAdmin)
 }
 
 func (r *queryResolver) Categories(ctx context.Context, limit *int, offset *int) ([]*model.Category, error) {

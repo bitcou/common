@@ -143,14 +143,17 @@ func (r *queryResolver) PurchasesResolver(filter *model.PurchaseFilter, limit *i
 	return purchases, nil
 }
 
-func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, offset *int) ([]*model.Client, error) {
+func (r *queryResolver) ClientsResolver(filter *model.ClientFilter, limit *int, offset *int, isAdmin bool) ([]*model.Client, error) {
 	var clients []*model.Client
 	query := r.Resolver.DB
 
 	if filter != nil {
-		if filter.ID != nil {
-			query = query.Where("id = ?", *filter.ID)
+		if !isAdmin {
+			if filter.ID != nil {
+				query = query.Where("id = ?", *filter.ID)
+			}
 		}
+
 		if filter.Name != nil && *filter.Name != "" {
 			query = query.Where("name LIKE ?", fmt.Sprintf("%%%s%%", *filter.Name))
 		}
